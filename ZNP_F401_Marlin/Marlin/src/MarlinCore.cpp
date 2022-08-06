@@ -1667,14 +1667,14 @@ void setup() {
  */
 void loop() {
   do {
-    #if BOTH(MKS_TEST, SDSUPPORT)
-    TERN_(MKS_TEST, mks_test_get());
-    if (mks_test_flag == 0x1E) 
-    {
-      mks_gpio_test();
-      mks_hardware_test();
-    }
-    #endif
+    // #if ENABLED(MKS_TEST)
+    // TERN_(MKS_TEST, mks_test_get());
+    // if (mks_test_flag == 0x1E) 
+    // {
+    //   mks_gpio_test();
+    //   mks_hardware_test();
+    // }
+    // #endif
     idle();
 
     #if ENABLED(SDSUPPORT)

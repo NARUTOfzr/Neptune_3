@@ -38,7 +38,7 @@
 #include "../../../../module/temperature.h"
 #include "../../../../sd/cardreader.h"
 
-#if 1//ENABLED(MKS_TEST)
+#if ENABLED(MKS_TEST)
 
 #include "../../../../pins/pins.h"
 
@@ -83,7 +83,7 @@
   #define ESTATE(S) (READ(S##_PIN) != S##_ENDSTOP_INVERTING)
 
 
-#if BOTH(MKS_TEST, SDSUPPORT)
+#if ENABLED(MKS_TEST)
 uint8_t mks_test_flag = 0;
 const char *MKSTestPath = "MKS_TEST";
 void mks_test_get() 
@@ -217,7 +217,7 @@ void mks_test_beeper() {
   delay(100);
 }
 
-#if ENABLED(SDSUPPORT)
+#if ENABLED(MKS_TEST)
 
 void mks_gpio_test() {
   

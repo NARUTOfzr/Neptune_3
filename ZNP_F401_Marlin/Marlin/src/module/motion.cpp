@@ -1523,7 +1523,7 @@ void prepare_line_to_destination() {
     feedRate_t home_fr_mm_s = fr_mm_s ?: homing_feedrate(axis);
     //Z HOMING SLOW
     if(axis == Z_AXIS){
-       home_fr_mm_s = 1;
+       home_fr_mm_s = 0.35;
     }
 
     if (DEBUGGING(LEVELING)) {

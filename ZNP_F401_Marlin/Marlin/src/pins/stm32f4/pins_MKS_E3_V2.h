@@ -128,5 +128,5 @@
   #define SD_MISO_PIN                       PB14
   #define SD_MOSI_PIN                       PB15
   #define SD_DETECT_PIN                     PC3
-  #define SD_SPI_SPEED                      SPI_HALF_SPEED
+  #define SD_SPI_SPEED                      SPI_FULL_SPEED
 #endif

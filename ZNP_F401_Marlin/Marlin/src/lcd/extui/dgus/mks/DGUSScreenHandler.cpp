@@ -854,10 +854,11 @@ void DGUSScreenHandler::Level_Ctrl_MKS(DGUS_VP_Variable &var, void *val_ptr) {
 
       sprintf(buf, "M109 S%d", mks_AL_default_e0_temp);
       gcode.process_subcommands_now(PSTR(buf));
-      gcode.process_subcommands_now(PSTR("G28"));
-      gcode.process_subcommands_now(PSTR("G91"));
-      gcode.process_subcommands_now(PSTR("G1 Z5 F1000"));
       gcode.process_subcommands_now(PSTR("G90"));
+      gcode.process_subcommands_now(PSTR("G28"));
+      //gcode.process_subcommands_now(PSTR("G91"));
+      //gcode.process_subcommands_now(PSTR("G1 Z5 F1000"));
+      //gcode.process_subcommands_now(PSTR("G90"));
       
       queue.inject_P(PSTR("G29"));
 
@@ -2135,10 +2136,26 @@ void dgus_sd_read_err_disp(uint16_t on_off) {
   dgusdisplay.WriteVariable(VP_SD_read_err, on_off);
 }
 
+
+/*****************************************************************
+ *  For MKS test
+ * **************************************************************/
+#if ENABLED(MKS_TEST) 
+
+void mks_test_handler(void) {
+
+
+
+}
+
+
+#endif // MKS_TEST
+
+
+
 bool DGUSScreenHandler::loop() {
   dgusdisplay.loop();
 
-  
   const millis_t ms = millis();
   static millis_t next_event_ms = 0;
   uint16_t default_fan_icon_val = 1;
@@ -2149,11 +2166,6 @@ bool DGUSScreenHandler::loop() {
     UpdateScreenVPData();
   }
 
-
-
-
-
-
   if (language_times != 0) {
     mks_language_index = MKS_English;
     LanguagePInit();
@@ -2163,10 +2175,11 @@ bool DGUSScreenHandler::loop() {
 
   if(level_temp_check() == 1) {
     GotoScreen(MKSLCD_AUTO_LEVEL);
-    gcode.process_subcommands_now(PSTR("G28"));
-    gcode.process_subcommands_now(PSTR("G91"));
-    gcode.process_subcommands_now(PSTR("G1 Z5 F1000"));
     gcode.process_subcommands_now(PSTR("G90"));
+    gcode.process_subcommands_now(PSTR("G28"));
+    //gcode.process_subcommands_now(PSTR("G91"));
+    //gcode.process_subcommands_now(PSTR("G1 Z5 F1000"));
+    //gcode.process_subcommands_now(PSTR("G90"));
     queue.inject_P(PSTR("G29"));
   }
 
@@ -2177,17 +2190,17 @@ bool DGUSScreenHandler::loop() {
       booted = true;
 
       TERN_(MKS_TEST, mks_test_get());
+#if ENABLED(MKS_TEST)
       if (mks_test_flag == 0x1E) 
       {
         GotoScreen(MKSLCD_SCREEN_TEST);
         init_test_gpio();
         mks_language_index = MKS_English;
-        // dgusdisplay.WriteVariablePGM(VP_TEST_TEMP1, "HOT_TEMP:\n", 10, 1);
-        // dgusdisplay.WriteVariablePGM(VP_TEST_TEMP2, "BED_TEMP:\n", 10, 1);
       }
-
-      else{
-        
+      else
+#endif       
+      {
+    
       #if USE_SENSORLESS
         TERN_(X_HAS_STEALTHCHOP, tmc_step.x = stepperX.homing_threshold());
         TERN_(Y_HAS_STEALTHCHOP, tmc_step.y = stepperY.homing_threshold());
@@ -2209,7 +2222,6 @@ bool DGUSScreenHandler::loop() {
       dgusdisplay.WriteVariable(VP_FAN_ON_OFF_VAL, default_fan_icon_val);
       dgus_sd_read_err_disp(0);
 
-	  
       dgusdisplay.WriteVariable(VP_ZNP_LANGUAGE, mks_language);
       dgusdisplay.WriteVariable(VP_DEFAULT_PLA_T_TEMP, mks_PLA_default_e0_temp);
       dgusdisplay.WriteVariable(VP_DEFAULT_PLA_B_TEMP, mks_PLA_default_bed_temp);
@@ -2233,8 +2245,13 @@ bool DGUSScreenHandler::loop() {
    
       }
     }
-  
-    
+    #if ENABLED(MKS_TEST)
+      if (mks_test_flag == 0x1E) {
+        mks_gpio_test();
+        mks_hardware_test();
+      }
+    #endif
+
       #if ENABLED(DGUS_MKS_RUNOUT_SENSOR)
       if(recovery_flg == true)
       {

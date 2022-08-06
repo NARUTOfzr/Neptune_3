@@ -565,7 +565,7 @@ void GCodeQueue::get_serial_commands() {
       if (n < 0 && !card_eof) { 
         SERIAL_ERROR_MSG(STR_SD_ERR_READ); 
 
-        // ¿ØÖÆÆÁÄ»ÏÔÊ¾err;
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½Ê¾err;
         dgus_sd_read_err_disp(1);
 
         continue; 

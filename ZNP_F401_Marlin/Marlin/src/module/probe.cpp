@@ -606,8 +606,8 @@ float Probe::run_z_probe(const bool sanity_check/*=true*/) {
     if (TERN0(PROBE_TARE, tare())) return true;
 
     // Do a first probe at the fast speed
-    const bool probe_fail = probe_down_to_z(z_probe_low_point, fr_mm_s),            // No probe trigger?
-               early_fail = (scheck && current_position.z > -offset.z + clearance); // Probe triggered too high?
+    const bool probe_fail = probe_down_to_z(z_probe_low_point, fr_mm_s)/*,            // No probe trigger?
+               early_fail = (scheck && current_position.z > -offset.z + clearance)*/; // Probe triggered too high?
     #if ENABLED(DEBUG_LEVELING_FEATURE)
       if (DEBUGGING(LEVELING) && (probe_fail || early_fail)) {
         DEBUG_ECHOPGM_P(plbl);
@@ -619,7 +619,7 @@ float Probe::run_z_probe(const bool sanity_check/*=true*/) {
     #else
       UNUSED(plbl);
     #endif
-    return probe_fail || early_fail;
+    return probe_fail/* || early_fail*/;
   };
 
   // Stop the probe before it goes too low to prevent damage.
@@ -735,7 +735,8 @@ float Probe::run_z_probe(const bool sanity_check/*=true*/) {
     if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("2nd Probe Z:", z2, " Discrepancy:", first_probe_z - z2);
 
     // Return a weighted average of the fast and slow probes
-    const float measured_z = (z2 * 3.0 + first_probe_z * 2.0) * 0.2;
+    //const float measured_z = (z2 * 3.0 + first_probe_z * 2.0) * 0.2;
+    const float measured_z = current_position.z;
 
   #else
 

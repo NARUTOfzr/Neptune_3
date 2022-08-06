@@ -129,7 +129,7 @@ void Z_before_G28()
   // if(READ(PB9)==LOW)
   //   do_blocking_move_to_z(10,homing_feedrate(_AXIS(Z))*4);
     
-	do_blocking_move_to_z(move_length,homing_feedrate(_AXIS(Z))*4);
+	do_blocking_move_to_z(move_length,homing_feedrate(_AXIS(Z))*10);
 	planner.synchronize(); 
   //SET_SOFT_ENDSTOP_LOOSE(false);
 	//quickstop_stepper();
