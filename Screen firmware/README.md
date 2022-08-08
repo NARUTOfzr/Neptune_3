@@ -5,8 +5,9 @@
 # 屏幕固件与主板固件兼容关系
 # Compatibility between screen firmware and mainboard firmware
 |   屏幕固件版本   |     主板固件版本    | 
+|-------------------|--------------------|
 | Screen Firmware Version | Mainboard Firmware Version |
-| V1 | V1.0.2 V1.0.3 |
+| V1 | V1.0.2/V1.0.3 |
 | V2 | V2.0.1 |
 
 
@@ -19,6 +20,8 @@
 - Added 【Leveling Temperature Settings】 to 【Settings】
 
 ## V2 (Stay tuned for)
+- @@@
+- @@@
 
 
 
@@ -26,6 +29,7 @@
 # 加载屏幕固件方法
 ## TF卡格式要求（格式化TF卡）
 |   文件系统（F）  |  FAT32(默认) |
+|-----------------|--------------|
 | 分配单元大小（A）|  4096 字节   |
 
 ## 方法
@@ -36,6 +40,7 @@
 # Loading screen firmware method
 ## TF card format requirements（Format the TF card）
 |      File system     |     FAT32      |
+|----------------------|----------------|
 | Allocation unit size |    4096 bit    |
 
 ## Method
