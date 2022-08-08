@@ -11,7 +11,7 @@
 |           V2            |          V2.0.1            |
 
 
-## 升级日志
+## 升级日志/The upgrade log
 ### V1.0.2
 - 修复了一些已发现bug。改善了调平方式。
 - Fixed some discovered bugs. Improved leveling method.
