@@ -13,7 +13,9 @@
 
 ## 升级日志/The upgrade log
 ### V1.0.2
+- 增加【调平温度设置】
 - 修复了一些已发现bug。改善了调平方式。
+- Added 【Leveling Temperature Settings】
 - Fixed some discovered bugs. Improved leveling method.
 
 ### V1.0.3
