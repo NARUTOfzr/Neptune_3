@@ -21,22 +21,33 @@ Neptune3-Firmware Update Notes.docx
 
 
 ## 升级日志/The upgrade log
-### V1
+### 屏幕固件/Screen firmware
+#### V1
 - 在【设置】中增加【调平温度设置】
 - Added 【Leveling Temperature Settings】 to 【Settings】
 
-### V2 (Stay tuned for)
+#### V2 (Stay tuned for)
 - @@@
 - @@@
 
+### 主板固件/Board firmware
+#### V1.0.2
+- 增加【调平温度设置】
+- 修复了一些已发现bug。改善了调平方式。
+- Added 【Leveling Temperature Settings】
+- Fixed some discovered bugs. Improved leveling method.
+
+#### V1.0.3
+- 修复了一些已发现bug。改善了调平方式。
+- Fixed some discovered bugs. Improved leveling method.
 
 
 
 ## 加载屏幕固件方法
 ### 1、TF卡格式要求（格式化TF卡）
-|   文件系统（F）  |  FAT32(默认) |
-|-----------------|--------------|
-| 分配单元大小（A）|  4096 字节   |
+|   文件系统（F）       | 分配单元大小（A） |
+|----------------------|-------------------|
+|     FAT32(默认)      |    4096 字节      |
 
 ### 2、方法
 - ①拆开屏幕外壳。
@@ -54,9 +65,9 @@ Neptune3-Firmware Update Notes.docx
 
 ## Loading screen firmware method
 ### 1、TF card format requirements（Format the TF card）
-|      File system     |     FAT32      |
-|----------------------|----------------|
-| Allocation unit size |    4096 bit    |
+|      File system     |      Allocation unit size     |
+|----------------------|-------------------------------|
+|      FAT32           |           4096 bit            |
 
 ### 2、Method
 - ① Remove the screen cover.
