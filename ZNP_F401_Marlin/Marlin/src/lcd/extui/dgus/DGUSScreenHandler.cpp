@@ -337,6 +337,8 @@ void DGUSScreenHandler::DGUSLCD_SendHeaterStatusToDisplay(DGUS_VP_Variable &var)
       case 0:
         ExtUI::stopPrint();
         GotoScreen(DGUSLCD_SCREEN_MAIN);
+        // settings.save();
+	      queue.inject_P(PSTR("M500"));
       break;
       case 1:
         if(IS_SD_PRINTING())

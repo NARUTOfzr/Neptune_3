@@ -234,7 +234,9 @@ void DGUSScreenHandler::DGUSLCD_SendTMCStepValue(DGUS_VP_Variable &var) {
         z_offset_add = 0;
       break;
       case 1:
+        // settings.save();
         GotoScreen(DGUSLCD_SCREEN_MAIN);
+	      queue.inject_P(PSTR("M500"));
       break;
     }
   }
@@ -267,7 +269,6 @@ void DGUSScreenHandler::DGUSLCD_SendTMCStepValue(DGUS_VP_Variable &var) {
 
         GotoScreen(MKSLCD_SCREEN_PAUSE);
         if (!ExtUI::isPrintingFromMediaPaused()) {
-          
           nozzle_park_mks.print_pause_start_flag = 1;
           nozzle_park_mks.blstatus = true;
           ExtUI::pausePrint();
@@ -479,6 +480,7 @@ void DGUSScreenHandler::GetFanPercentageStep(DGUS_VP_Variable &var, void *val_pt
   *(uint16_t *)var.memadr = swap16(*(uint16_t *)val_ptr);  
 }
 
+uint8_t fan_speed_main_percent = 0;
 void DGUSScreenHandler::HandleFanPercentageAdjust(DGUS_VP_Variable &var, void *val_ptr) {
     DEBUG_ECHOLNPGM("HandleFanPercentageAdjust");
 
@@ -511,6 +513,7 @@ void DGUSScreenHandler::HandleFanPercentageAdjust(DGUS_VP_Variable &var, void *v
     }
     
     ForceCompleteUpdate();
+    fan_speed_main_percent = (thermalManager.fan_speed[0] * 100) / 255;
   }
 
 void DGUSScreenHandler::GetManualMovestep(DGUS_VP_Variable &var, void *val_ptr) {
@@ -732,7 +735,7 @@ void DGUSScreenHandler::AUTO_LEVEL_POPUP(DGUS_VP_Variable &var, void *val_ptr) {
 }
 
 uint16_t fan_icon_val = 1; // 1: is default is off;
-
+extern uint8_t fan_speed_main_percent;
 void DGUSScreenHandler::SET_FAN_ON_OFF_HANDLER(DGUS_VP_Variable &var, void *val_ptr) {
     const uint16_t value = swap16(*(uint16_t *)val_ptr);
      
@@ -746,6 +749,7 @@ void DGUSScreenHandler::SET_FAN_ON_OFF_HANDLER(DGUS_VP_Variable &var, void *val_
       break;
     }
     ForceCompleteUpdate();
+    fan_speed_main_percent = (thermalManager.fan_speed[0] * 100) / 255;
 }
 
 void DGUSScreenHandler::SET_FILAMENT_DET_HANDLER(DGUS_VP_Variable &var, void *val_ptr) {
@@ -855,11 +859,15 @@ void DGUSScreenHandler::Level_Ctrl_MKS(DGUS_VP_Variable &var, void *val_ptr) {
 
       sprintf(buf, "M109 S%d", mks_AL_default_e0_temp);
       gcode.process_subcommands_now(PSTR(buf));
-      gcode.process_subcommands_now(PSTR("G90"));
-      gcode.process_subcommands_now(PSTR("G28"));
+      //1-------G28中已开启
       //gcode.process_subcommands_now(PSTR("G91"));
-      //gcode.process_subcommands_now(PSTR("G1 Z5 F1000"));
+      //gcode.process_subcommands_now(PSTR("G1 Z10 F800"));
       //gcode.process_subcommands_now(PSTR("G90"));
+      //1--------设置第一个探测点抬升高度
+      gcode.process_subcommands_now(PSTR("G28"));
+      gcode.process_subcommands_now(PSTR("G91"));
+      gcode.process_subcommands_now(PSTR("G1 Z8 F300"));
+      gcode.process_subcommands_now(PSTR("G90"));
       
       queue.inject_P(PSTR("G29"));
 
@@ -905,6 +913,7 @@ void DGUSScreenHandler::MeshLevelDistanceConfig(DGUS_VP_Variable &var, void *val
 }
 
 void DGUSScreenHandler::MeshLevel(DGUS_VP_Variable &var, void *val_ptr) {
+  char Ebuf[50];
   // #if ENABLED(MESH_BED_LEVELING)  AUTO_BED_LEVELING_BILINEAR
   #if ANY(MESH_BED_LEVELING, AUTO_BED_LEVELING_BILINEAR)
     const uint16_t mesh_value = swap16(*(uint16_t *)val_ptr);
@@ -1003,12 +1012,18 @@ void DGUSScreenHandler::MeshLevel(DGUS_VP_Variable &var, void *val_ptr) {
       if(Leveling_done_flg==1)
       {
         //Leveling_done_zhome_flg = 0;
-        Leveling_done_flg = 0;
-        thermalManager.temp_hotend[0].target = 0;
-        thermalManager.temp_bed.target = 0;      
+        Leveling_done_flg = 0;     
         //queue.inject_P(PSTR("M500"));
         settings.save();
+        #if 0
+          ZERO(Ebuf);
+          sprintf(Ebuf,"G1 E85 F%d", filamentSpeed_mm_s * 60);
+          gcode.process_subcommands_now(PSTR(Ebuf));
+          planner.synchronize();
+        #endif
         queue.inject_P(PSTR("G28XY"));
+        thermalManager.temp_hotend[0].target = 0;
+        thermalManager.temp_bed.target = 0; 
         GotoScreen(MKSLCD_SCREEN_HOME);
       }
       break;
@@ -2161,6 +2176,7 @@ bool DGUSScreenHandler::loop() {
   static millis_t next_event_ms = 0;
   uint16_t default_fan_icon_val = 1;
   static uint8_t language_times = 2;
+  static char Ebuf[50];
 
   if (!IsScreenComplete() || ELAPSED(ms, next_event_ms)) {
     next_event_ms = ms + DGUS_UPDATE_INTERVAL_MS;
@@ -2176,11 +2192,27 @@ bool DGUSScreenHandler::loop() {
 
   if(level_temp_check() == 1) {
     GotoScreen(MKSLCD_AUTO_LEVEL);
-    gcode.process_subcommands_now(PSTR("G90"));
-    gcode.process_subcommands_now(PSTR("G28"));
+    #if 0
+      gcode.process_subcommands_now(PSTR("G91"));
+      gcode.process_subcommands_now(PSTR("G1 Z5 F1000"));
+      ZERO(Ebuf);
+      sprintf(Ebuf,"G1 E20 F%d", filamentSpeed_mm_s * 60);
+      gcode.process_subcommands_now(PSTR(Ebuf));
+      ZERO(Ebuf);
+      sprintf(Ebuf,"G1 E-100 F%d", filamentSpeed_mm_s * 60);
+      gcode.process_subcommands_now(PSTR(Ebuf));
+    #endif
+
+    //1-------G28中已开启
     //gcode.process_subcommands_now(PSTR("G91"));
-    //gcode.process_subcommands_now(PSTR("G1 Z5 F1000"));
+    //gcode.process_subcommands_now(PSTR("G1 Z10 F800"));
     //gcode.process_subcommands_now(PSTR("G90"));
+    //1--------设置第一个探测点抬升高度
+    gcode.process_subcommands_now(PSTR("G28"));
+    gcode.process_subcommands_now(PSTR("G91"));
+    gcode.process_subcommands_now(PSTR("G1 Z8 F300"));
+    gcode.process_subcommands_now(PSTR("G90"));
+    
     queue.inject_P(PSTR("G29"));
   }
 
@@ -2191,17 +2223,15 @@ bool DGUSScreenHandler::loop() {
       booted = true;
 
       TERN_(MKS_TEST, mks_test_get());
-#if ENABLED(MKS_TEST)
+
       if (mks_test_flag == 0x1E) 
       {
         GotoScreen(MKSLCD_SCREEN_TEST);
         init_test_gpio();
         mks_language_index = MKS_English;
       }
-      else
-#endif       
-      {
-    
+      else{
+        
       #if USE_SENSORLESS
         TERN_(X_HAS_STEALTHCHOP, tmc_step.x = stepperX.homing_threshold());
         TERN_(Y_HAS_STEALTHCHOP, tmc_step.y = stepperY.homing_threshold());
@@ -2246,12 +2276,11 @@ bool DGUSScreenHandler::loop() {
    
       }
     }
-    #if ENABLED(MKS_TEST)
+
       if (mks_test_flag == 0x1E) {
         mks_gpio_test();
         mks_hardware_test();
       }
-    #endif
 
       #if ENABLED(DGUS_MKS_RUNOUT_SENSOR)
       if(recovery_flg == true)

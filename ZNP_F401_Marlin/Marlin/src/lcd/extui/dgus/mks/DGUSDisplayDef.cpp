@@ -89,6 +89,7 @@ celsius_t mks_AL_default_bed_temp; // Initialized by settings.load()
 
 uint16_t mks_language=6; // Initialized by settings.load()
 uint16_t mks_filament_det_enable = 1; // Initialized by settings.load()
+extern uint8_t fan_speed_main_percent;
 
 void MKS_reset_settings() {
   constexpr xy_int_t init_dgus_level_offsets[5] = {
@@ -98,7 +99,7 @@ void MKS_reset_settings() {
   };
   mks_language_index = 0;
   COPY(mks_corner_offsets, init_dgus_level_offsets);
-  mks_park_pos.set(20, 20, 10);
+  mks_park_pos.set(5, 5, 5);    //1-------暂停打印头位置
   mks_min_extrusion_temp = 0;
   mks_PLA_default_e0_temp = PREHEAT_1_TEMP_HOTEND;
   mks_PLA_default_bed_temp = PREHEAT_1_TEMP_BED;
@@ -121,6 +122,14 @@ void MKS_pause_print_move() {
   // Save the current position, the raise amount, and 'already raised'
   TERN_(POWER_LOSS_RECOVERY, if (recovery.enabled) recovery.save(true, mks_park_pos.z, true));
 
+  //1--------设置暂停回抽
+  gcode.process_subcommands_now(PSTR("M108"));
+  gcode.process_subcommands_now(PSTR("M83"));
+  gcode.process_subcommands_now(PSTR("G1 E-6 F600"));
+  gcode.process_subcommands_now(PSTR("G90"));
+
+
+
   destination.z = _MIN(current_position.z + mks_park_pos.z, Z_MAX_POS);
   prepare_internal_move_to_destination(park_speed_z);
 
@@ -135,6 +144,15 @@ void MKS_resume_print_move() {
   prepare_internal_move_to_destination(park_speed_xy);
   destination.z = position_before_pause.z;
   prepare_internal_move_to_destination(park_speed_z);
+
+  //1--------设置暂停回抽后恢复
+  gcode.process_subcommands_now(PSTR("M108"));
+  gcode.process_subcommands_now(PSTR("M83"));
+  gcode.process_subcommands_now(PSTR("G1 E6 F500"));
+  gcode.process_subcommands_now(PSTR("G1 F2000"));
+  gcode.process_subcommands_now(PSTR("G90"));
+
+
   TERN_(POWER_LOSS_RECOVERY, if (recovery.enabled) recovery.save(true));
 }
 
@@ -167,11 +185,14 @@ const uint16_t VPList_Main[] PROGMEM = {
     VP_T_Bed_Is, VP_T_Bed_Set, VP_BED_STATUS,
   #endif
   #if HAS_FAN
-    VP_Fan0_Percentage, VP_FAN0_STATUS,
+    VP_Fan0_Percentage, 
+    VP_FAN0_STATUS,
+    VP_Fan0_MAIN_Percentage,
   #endif
   VP_XPos, VP_YPos, VP_ZPos,
   VP_Fan0_Percentage,
   VP_Feedrate_Percentage,
+  VP_Fan0_MAIN_Percentage,
   #if ENABLED(LCD_SET_PROGRESS_MANUALLY)
     VP_PrintProgress_Percentage,
   #endif
@@ -185,6 +206,7 @@ const uint16_t MKSList_Home[] PROGMEM = {
   VP_T_Bed_Is, VP_T_Bed_Set,
   // FAN
   VP_Fan0_Percentage,
+  VP_Fan0_MAIN_Percentage,
 
   VP_ZPos,
   // Language
@@ -200,6 +222,7 @@ const uint16_t MKSList_Setting[] PROGMEM = {
   VP_T_Bed_Is, VP_T_Bed_Set,
   // FAN
   VP_Fan0_Percentage,
+  VP_Fan0_MAIN_Percentage,
   // Language
 
   0x0000
@@ -212,6 +235,7 @@ const uint16_t MKSList_Tool[] PROGMEM = {
   VP_T_Bed_Is, VP_T_Bed_Set,
   // FAN
   VP_Fan0_Percentage,
+  VP_Fan0_MAIN_Percentage,
   // Language
   
   // LCD BLK
@@ -226,6 +250,7 @@ const uint16_t MKSList_EXTRUE[] PROGMEM = {
   VP_T_Bed_Is, VP_T_Bed_Set,
   // FAN
   VP_Fan0_Percentage,
+  VP_Fan0_MAIN_Percentage,
 
   VP_Filament_distance,
   VP_Filament_speed,
@@ -239,6 +264,7 @@ const uint16_t MKSList_LEVEL[] PROGMEM = {
   VP_T_Bed_Is, VP_T_Bed_Set,
   // FAN
   VP_Fan0_Percentage,
+  VP_Fan0_MAIN_Percentage,
 
   0x0000
 };
@@ -250,6 +276,7 @@ const uint16_t MKSList_MOVE[] PROGMEM = {
   VP_T_Bed_Is, VP_T_Bed_Set,
   // FAN
   VP_Fan0_Percentage,
+  VP_Fan0_MAIN_Percentage,
   0x0000
 };
 
@@ -260,6 +287,7 @@ const uint16_t MKSList_Print[] PROGMEM = {
   VP_T_Bed_Is, VP_T_Bed_Set,
   // FAN
   VP_Fan0_Percentage,
+  VP_Fan0_MAIN_Percentage,
   // Print Percent
   VP_PrintProgress_Percentage,
   
@@ -272,6 +300,7 @@ const uint16_t MKSList_Print[] PROGMEM = {
   VP_PrintTime_H,
   VP_PrintTime_M,
   VP_PrintTime_S,
+  VP_SD_read_err,
 
   //VP_XPos,
   //VP_YPos,
@@ -286,6 +315,7 @@ const uint16_t MKSList_PrintPause[] PROGMEM = {
   VP_T_Bed_Is, VP_T_Bed_Set,
   // FAN
   VP_Fan0_Percentage,
+  VP_Fan0_MAIN_Percentage,
   // Print Percent
   VP_PrintProgress_Percentage_1,
   
@@ -322,6 +352,7 @@ const uint16_t MKSList_TempOnly[] PROGMEM = {
   VP_T_Bed_Is, VP_T_Bed_Set,
   // FAN
   VP_Fan0_Percentage,
+  VP_Fan0_MAIN_Percentage,
   // LCD BLK
   VP_LCD_BLK,
   0x0000
@@ -334,6 +365,7 @@ const uint16_t MKSList_Pluse[] PROGMEM = {
   VP_T_Bed_Is, VP_T_Bed_Set,
   // FAN
   VP_Fan0_Percentage,
+  VP_Fan0_MAIN_Percentage,
 
   // Pluse
   VP_X_STEP_PER_MM,
@@ -352,6 +384,7 @@ const uint16_t MKSList_MaxSpeed[] PROGMEM = {
   VP_T_Bed_Is, VP_T_Bed_Set,
   // FAN
   VP_Fan0_Percentage,
+  VP_Fan0_MAIN_Percentage,
 
   // Pluse
   VP_X_MAX_SPEED,
@@ -370,6 +403,7 @@ const uint16_t MKSList_MaxAcc[] PROGMEM = {
   VP_T_Bed_Is, VP_T_Bed_Set,
   // FAN
   VP_Fan0_Percentage,
+  VP_Fan0_MAIN_Percentage,
 
   // ACC
   VP_ACC_SPEED,
@@ -389,6 +423,7 @@ const uint16_t MKSList_PID[] PROGMEM = {
   VP_T_Bed_Is, VP_T_Bed_Set,
   // FAN
   VP_Fan0_Percentage,
+  VP_Fan0_MAIN_Percentage,
 
   // PID
   VP_E0_PID_P,
@@ -405,6 +440,7 @@ const uint16_t MKSList_Level_Point[] PROGMEM = {
   VP_T_Bed_Is, VP_T_Bed_Set,
   // FAN
   VP_Fan0_Percentage,
+  VP_Fan0_MAIN_Percentage,
 
   // Level Point
   // VP_Level_Point_One_X,
@@ -428,6 +464,7 @@ const uint16_t MKSList_Level_PrintConfig[] PROGMEM = {
   VP_Flowrate_E0,
   VP_Flowrate_E1,
   VP_Fan0_Percentage,
+  VP_Fan0_MAIN_Percentage,
   VP_Feedrate_Percentage,
 
   0x0000
@@ -554,6 +591,7 @@ const uint16_t MKSList_About[] PROGMEM = {
   // H43 Version
   VP_MKS_H43_VERSION,
   VP_MKS_H43_UpdataVERSION,
+  UI_VERSION_TEXT,
   0x0000
 };
 
@@ -564,6 +602,7 @@ const uint16_t MKSPrintStopPopup[] PROGMEM = {
   VP_T_Bed_Is, VP_T_Bed_Set,
   // FAN
   VP_Fan0_Percentage,
+  VP_Fan0_MAIN_Percentage,
   // Print Percent
   //VP_PrintProgress_Percentage,
 
@@ -574,34 +613,43 @@ const uint16_t MKSPrintStopPopup[] PROGMEM = {
   VP_PrintTime_S,
 
   VP_Fan0_Percentage,
+  VP_Fan0_MAIN_Percentage,
   VP_Feedrate_Percentage,
 
   VP_ZPos,
+
+  VP_SD_read_err,
 
   0x0000
 };
 
 const uint16_t MKSFanCTRL[] PROGMEM = {
   VP_Fan0_Percentage,
+  VP_Fan0_MAIN_Percentage,
+  VP_SD_read_err,
   0x0000
 };
 const uint16_t MKSFeedrate[] PROGMEM = {
   VP_Feedrate_Percentage,
+  VP_SD_read_err,
   0x0000
 };
 const uint16_t MKSFlow[] PROGMEM = {
   VP_Flowrate_E0,
+  VP_SD_read_err,
   0x0000
 };
 
 const uint16_t MKSList_FILAMET_HOTB_T[] PROGMEM = {
   VP_T_E0_Set,
   VP_T_Bed_Set,	
+  VP_SD_read_err,
   0x0000
 };
 const uint16_t MKSList_FILAMET_E_T[] PROGMEM = {
   VP_T_E0_Set,
   VP_T_Bed_Set,	
+  VP_SD_read_err,
   0x0000
 };
 const uint16_t MKSList_PrintConfirm[] = {
@@ -636,10 +684,8 @@ const uint16_t MKSTest[] PROGMEM = {
   VP_T_Bed_Is, 
   // VP_TEST_TEMP1,
   // VP_TEST_TEMP2,
-  #if ENABLED(MKS_TEST)
   VP_TEST_TEMP3,
   VP_TEST_TEMP4,
-  #endif
   //VP_TEST_TEMP5,
   0x0000
 };
@@ -667,7 +713,7 @@ const struct VPMapping VPMap[] PROGMEM = {
   //{ MKSLCD_SCREEN_Config, MKSList_TempOnly },                 
   //{ MKSLCD_SCREEN_Config_MOTOR, MKSList_MotoConfig },         
   //{ MKSLCD_PID, MKSList_PID },                                
-  //{ MKSLCD_ABOUT, MKSList_About },                            
+  { MKSLCD_ABOUT, MKSList_About },                            
   //{ MKSLCD_SCREEN_PRINT_CONFIG, MKSList_Level_PrintConfig },  
   //{ MKSLCD_SCREEN_EX_CONFIG, MKSList_EX_Config },             
   //{ MKSLCD_SCREEN_TMC_Config, MKSTMC_Config },                
@@ -697,6 +743,8 @@ const struct VPMapping VPMap[] PROGMEM = {
   {MKSLCD_SCREEN_TEST, MKSTest},
   { 0, nullptr } // List is terminated with an nullptr as table entry.
 };
+
+char UI_Version_Text[] = UI_VERSION;
 
 const char MarlinVersion[] PROGMEM = SHORT_BUILD_VERSION;
 const char H43Version[] PROGMEM = "ZNP_ROBIN_NANO_DW V2.0";
@@ -771,6 +819,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
       VPHELPER(VP_E0_PID_I, &thermalManager.temp_hotend[0].pid.Ki, ScreenHandler.HandleTemperaturePIDChanged, ScreenHandler.DGUSLCD_SendTemperaturePID),
       VPHELPER(VP_E0_PID_D, &thermalManager.temp_hotend[0].pid.Kd, ScreenHandler.HandleTemperaturePIDChanged, ScreenHandler.DGUSLCD_SendTemperaturePID),
       VPHELPER(VP_PID_AUTOTUNE_E0, nullptr, ScreenHandler.HandlePIDAutotune, nullptr),
+      VPHELPER(UI_VERSION_TEXT, UI_Version_Text, nullptr, ScreenHandler.DGUSLCD_SendStringToDisplay),
     #endif
     #if ENABLED(DGUS_FILAMENT_LOADUNLOAD)
       VPHELPER(VP_LOAD_Filament, nullptr, ScreenHandler.MKS_FilamentLoad, nullptr),
@@ -835,6 +884,8 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
    VPHELPER(VP_Fan0_Percentage_step,&FanPercentageStep,ScreenHandler.GetFanPercentageStep, ScreenHandler.DGUSLCD_SendWordValueToDisplay),
    VPHELPER(VP_Fan0_Percentage_Adjust,&thermalManager.fan_speed[0],ScreenHandler.HandleFanPercentageAdjust,ScreenHandler.DGUSLCD_SendFanToDisplay),
    VPHELPER(VP_Fan0_Percentage, &thermalManager.fan_speed[0], nullptr, ScreenHandler.DGUSLCD_SendWordValueToDisplay),
+   VPHELPER(VP_Fan0_MAIN_Percentage, &fan_speed_main_percent, nullptr, ScreenHandler.DGUSLCD_SendWordValueToDisplay),
+  //  VPHELPER(VP_Fan0_Percentage, &feedrate_percentage, nullptr, ScreenHandler.DGUSLCD_SendWordValueToDisplay),
 
   // Feedrate
    VPHELPER(VP_Feedrate_Percentage_step,&FeedratePercentageStep,ScreenHandler.GetFeedratePercentageStep, ScreenHandler.DGUSLCD_SendWordValueToDisplay),
@@ -1059,12 +1110,12 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
   #if ENABLED(DGUS_UI_WAITING)
     VPHELPER(VP_WAITING_STATUS, nullptr, nullptr, ScreenHandler.DGUSLCD_SendWaitingStatusToDisplay),
   #endif
-#if ENABLED(MKS_TEST)
+
   VPHELPER(VP_TEST_TEMP1, nullptr, nullptr, ScreenHandler.DGUSLCD_SendStringToDisplay_Language_MKS),
   VPHELPER(VP_TEST_TEMP2, nullptr, nullptr, ScreenHandler.DGUSLCD_SendStringToDisplay_Language_MKS),
   VPHELPER(VP_TEST_TEMP3, nullptr, nullptr, ScreenHandler.DGUSLCD_SendStringToDisplay_Language_MKS),
   VPHELPER(VP_TEST_TEMP4, nullptr, nullptr, ScreenHandler.DGUSLCD_SendStringToDisplay_Language_MKS),
-#endif
+
   // Messages for the User, shared by the popup and the kill screen. They can't be autouploaded as we do not buffer content.
   //{.VP = VP_MSGSTR1, .memadr = nullptr, .size = VP_MSGSTR1_LEN, .set_by_display_handler = nullptr, .send_to_display_handler = ScreenHandler.DGUSLCD_SendStringToDisplayPGM},
   //{.VP = VP_MSGSTR2, .memadr = nullptr, .size = VP_MSGSTR2_LEN, .set_by_display_handler = nullptr, .send_to_display_handler = ScreenHandler.DGUSLCD_SendStringToDisplayPGM},

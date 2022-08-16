@@ -41,6 +41,9 @@
 //============================= Getting Started =============================
 //===========================================================================
 
+
+#define UI_VERSION "        V1_1.0.3"
+
 /**
  * Here are some useful links to help get your machine configured and calibrated:
  *
@@ -934,7 +937,7 @@
  * Override with M203
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 200, 200, 6, 70 }
+#define DEFAULT_MAX_FEEDRATE          { 200, 200, 6, 60 }    //1------最高速度
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -947,7 +950,7 @@
  * Override with M201
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_ACCELERATION      { 1000, 1000, 100, 1000 }
+#define DEFAULT_MAX_ACCELERATION      { 1000, 800, 100, 1000 }     //1------最高加速度
 
 //#define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
@@ -1185,13 +1188,13 @@
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
 #define PROBING_MARGIN 20
 
-// X and Y axis travel speed (mm/min) between probes (133*60)
+// X and Y axis travel speed (mm/min) between probes (133*60)//
 #define XY_PROBE_FEEDRATE (40*60)
 
-// Feedrate (mm/min) for the first approach when double-probing (MULTIPLE_PROBING == 2)
+// Feedrate (mm/min) for the first approach when double-probing (MULTIPLE_PROBING == 2)//
 #define Z_PROBE_FEEDRATE_FAST (0.8*60)
 
-// Feedrate (mm/min) for the "accurate" probe of each point
+// Feedrate (mm/min) for the "accurate" probe of each point//
 #define Z_PROBE_FEEDRATE_SLOW (Z_PROBE_FEEDRATE_FAST / 3)
 
 /**
@@ -1256,9 +1259,9 @@
  * Example: `M851 Z-5` with a CLEARANCE of 4  =>  9mm from bed to nozzle.
  *     But: `M851 Z+1` with a CLEARANCE of 2  =>  2mm from bed to nozzle.
  */
-#define Z_CLEARANCE_DEPLOY_PROBE   5 // Z Clearance for Deploy/Stow
-#define Z_CLEARANCE_BETWEEN_PROBES  3 // Z Clearance between probe points
-#define Z_CLEARANCE_MULTI_PROBE     2 // Z Clearance between multiple probes
+#define Z_CLEARANCE_DEPLOY_PROBE   5 // Z Clearance for Deploy/Stow//
+#define Z_CLEARANCE_BETWEEN_PROBES  2 // Z Clearance between probe points
+#define Z_CLEARANCE_MULTI_PROBE     1 // Z Clearance between multiple probes
 //#define Z_AFTER_PROBING           5 //5 Z position after probing is done
 
 #define Z_PROBE_LOW_POINT          -10 // Farthest distance below the trigger-point to go before stopping
@@ -1361,7 +1364,7 @@
  */
 #define Z_IDLE_HEIGHT Z_HOME_POS
 
-#define Z_HOMING_HEIGHT    8    // (mm) Minimal Z height before homing (G28) for Z clearance above the bed, clamps, ...
+#define Z_HOMING_HEIGHT  8      // (mm) Minimal Z height before homing (G28) for Z clearance above the bed, clamps, ...
                                   // Be sure to have this much clearance over your Z_MAX_POS to prevent grinding.
 
 #define Z_AFTER_HOMING  0.2      // (mm) Height to move to after homing Z
@@ -1723,7 +1726,7 @@
  * Commands to execute at the end of G29 probing.
  * Useful to retract or move the Z probe out of the way."G1 Z10 F12000\nG1 X15 Y330\nG1 Z0.5\nG1 Z10"
  */
-#define Z_PROBE_END_SCRIPT "M500\nM501\nG28 Z\nG90\nG1 Z0.2 F60"
+#define Z_PROBE_END_SCRIPT "M500\nM501\nG28 Z\nG90\nG1 Z0.1 F60"   //1---
 
 // @section homing
 
@@ -1754,7 +1757,7 @@
 #endif
 
 // Homing speeds (mm/min)
-#define HOMING_FEEDRATE_MM_M { (50*60), (50*60), (1*60) }
+#define HOMING_FEEDRATE_MM_M { (50*60), (50*60), (6*60) }    //1-------
 
 // Validate that endstops are triggered on homing moves
 #define VALIDATE_HOMING_ENDSTOPS
@@ -1877,8 +1880,8 @@
 #define PREHEAT_2_TEMP_CHAMBER 35
 #define PREHEAT_2_FAN_SPEED     0 // Value from 0 to 255
 
-#define PREHEAT_AL_TEMP_HOTEND 140
-#define PREHEAT_AL_TEMP_BED     60
+#define PREHEAT_AL_TEMP_HOTEND   140//180//140
+#define PREHEAT_AL_TEMP_BED     60//60
 
 /**
  * Nozzle Park
@@ -2109,7 +2112,7 @@
  * you must uncomment the following option or it won't work.
  */
 #define SDSUPPORT
-//#define MKS_TEST  1
+#define MKS_TEST  1        //之前开启这个打印圆弧会卡顿
 /**
  * SD CARD: ENABLE CRC
  *

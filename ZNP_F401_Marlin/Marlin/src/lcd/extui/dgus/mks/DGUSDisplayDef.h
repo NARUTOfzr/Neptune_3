@@ -308,6 +308,7 @@ enum DGUSLCD_Screens : uint8_t {
     MKSLCD_Screen_Baby                  =  71,
   #endif
 
+  DGUSLCD_WATCHDOG_TIMEOUT                = 170,
   //DGUSLCD_SCREEN_CONFIRM                = 240,
   DGUSLCD_SCREEN_KILL                   = 250, ///< Kill Screen. Must always be 250 (to be able to display "Error wrong LCD Version")
   //DGUSLCD_SCREEN_WAITING                = 251,
@@ -801,4 +802,7 @@ constexpr uint16_t SP_T_Bed_Set   = 0x5040;
   constexpr uint16_t VP_TEST_TEMP4                    = 0x6030;
 
   #endif
+
+  constexpr uint16_t UI_VERSION_TEXT                  = 0x6050;
+  constexpr uint16_t VP_Fan0_MAIN_Percentage          = 0x6070;
 #endif // MKS_FINSH

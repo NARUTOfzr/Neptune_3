@@ -129,7 +129,7 @@ void Z_before_G28()
   // if(READ(PB9)==LOW)
   //   do_blocking_move_to_z(10,homing_feedrate(_AXIS(Z))*4);
     
-	do_blocking_move_to_z(move_length,homing_feedrate(_AXIS(Z))*10);
+	do_blocking_move_to_z(move_length,homing_feedrate(_AXIS(Z))*4);
 	planner.synchronize(); 
   //SET_SOFT_ENDSTOP_LOOSE(false);
 	//quickstop_stepper();
@@ -275,6 +275,12 @@ void GcodeSuite::G28() {
   // Disable the leveling matrix before homing
   #if CAN_SET_LEVELING_AFTER_G28
     const bool leveling_restore_state = parser.boolval('L', TERN1(RESTORE_LEVELING_AFTER_G28, planner.leveling_active));
+    //1---------快速G28起始抬升速度
+    gcode.process_subcommands_now(PSTR("G91"));
+    gcode.process_subcommands_now(PSTR("G1 Z10 F300"));
+    gcode.process_subcommands_now(PSTR("G90"));
+  
+  
   #endif
 
   // Cancel any prior G29 session
