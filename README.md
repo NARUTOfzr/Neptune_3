@@ -28,9 +28,9 @@ Neptune3-Firmware Update Notes.docx
 
 #### V1
 - 在【设置】→【关于】中可以查看屏幕固件版本以及主板固件版本
+- 在【设置】中增加【调平温度设置】。默认调平温度：热端140℃  /  热床：60℃
 - In 【Settings】→【About】, you can view the screen firmware version and the motherboard firmware version
-- 在【设置】中增加【调平温度设置】
-- Added 【Leveling Temperature Settings】 to 【Settings】
+- Added 【Leveling Temperature Settings】 to 【Settings】. Default leveling temperature: Hotend 140 ° C  / Hotbed 60 ° C
 
 
 #### V2 (Stay tuned for)
