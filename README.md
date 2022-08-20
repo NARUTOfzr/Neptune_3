@@ -14,7 +14,7 @@ Neptune3-Firmware Update Notes.docx
 |-------------------|--------------------|
 | Screen Firmware Version | Mainboard Firmware Version |
 | V0 | 停止下载/stop  download |
-| V1 | V1_1.0.3 |
+| V1 |V1.0.2  V1_1.0.3 |
 
 
 
@@ -22,9 +22,16 @@ Neptune3-Firmware Update Notes.docx
 
 ## 升级日志/The upgrade log
 ### 屏幕固件/Screen firmware
+#### V0
+- 旧版本固件不提供下载
+- Older firmware versions are not available for download
+
 #### V1
+- 在【设置】→【关于】中可以查看屏幕固件版本以及主板固件版本
+- In 【Settings】→【About】, you can view the screen firmware version and the motherboard firmware version
 - 在【设置】中增加【调平温度设置】
 - Added 【Leveling Temperature Settings】 to 【Settings】
+
 
 #### V2 (Stay tuned for)
 - @@@
@@ -37,7 +44,7 @@ Neptune3-Firmware Update Notes.docx
 - Added 【Leveling Temperature Settings】
 - Fixed some discovered bugs. Improved leveling method.
 
-#### V1_1.0.3
+#### V1_V1.0.3
 - 修复了一些已发现bug。改善了调平方式。
 - Fixed some discovered bugs. Improved leveling method.
 
