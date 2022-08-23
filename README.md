@@ -47,8 +47,10 @@ Neptune3-Firmware Update Notes.docx
 #### V1_V1.0.3
 - 修复了一些已发现bug。改善了调平方式。
 - 改善了回原点速度和调平速度。
+- 打印过程中，点击【停止】→【确定】 或 打印完成后点击【确定】，会自动保存Z-offset值。为了解决打印过程中调整的Z-offset不会保存问题。
 - Fixed some discovered bugs. Improved leveling method.
 - Optimize return to origin speed and leveling speed.
+- To solve the problem that the Z-offset adjusted during printing will not be saved：During printing, click 【stop】→【confirm】 or click 【confirm】 after printing is completed, the Z-offset value will be saved automatically. 
 
 
 
