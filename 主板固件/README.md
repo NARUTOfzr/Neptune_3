@@ -18,7 +18,7 @@
 - Added 【Leveling Temperature Settings】
 - Fixed some discovered bugs. Improved leveling method.
 
-### V1_V1.0.3
+### V1_1.0.3
 - 修复了一些已发现bug。改善了调平方式。
 - 改善了回原点速度和调平速度。
 - Fixed some discovered bugs. Improved leveling method.
