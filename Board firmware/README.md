@@ -7,8 +7,8 @@
 | 屏幕固件版本 | 主板固件版本 |
 |-------------------------|----------------------------|
 | Screen Firmware Version | Mainboard Firmware Version |
-|           V1            |        V1.0.2 V1.0.3       |
-|           V2            |          V2.0.1            |
+|           V1            |        V1.0.2 V1_1.0.3       |
+
 
 
 ## 升级日志/The upgrade log
