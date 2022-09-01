@@ -53,6 +53,14 @@ Neptune3-Firmware Update Notes.docx
 - To solve the problem that the Z-offset adjusted during printing will not be saved：During printing, click 【stop】→【confirm】 or click 【confirm】 after printing is completed, the Z-offset value will be saved automatically. 
 
 
+#### V1_1.0.4（Update in the future）
+- 在V1_1.0.3固件基础上改进
+- 修复断电续打功能bug：恢复打印时悬空打印。如果断电后Z轴掉落或者模型脱落也会导致续打失败。
+- 优化打印操作。打印过程中，点击暂停后挤出机会先回抽10mm，以防止漏料。暂停后恢复会先挤出9mm→回抽9mm→移动到打印位置→继续正常打印，避免了缺料问题
+- 
+- 
+- 
+- 
 
 ## 加载屏幕固件方法
 ### 1、TF卡格式要求（格式化TF卡）
