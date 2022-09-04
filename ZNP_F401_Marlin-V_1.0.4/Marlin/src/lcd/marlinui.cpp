@@ -1551,7 +1551,7 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
     TERN_(HOST_PROMPT_SUPPORT, hostui.prompt_open(PROMPT_INFO, F("UI Aborted"), FPSTR(DISMISS_STR)));
     LCD_MESSAGE(MSG_PRINT_ABORTED);
     TERN_(HAS_LCD_MENU, return_to_status());
-    gcode.process_subcommands_now(F("G91\n G1 E0-5 F1300\n G90"));
+    //2---------注释无用行gcode.process_subcommands_now(F("G91\n G1 E0-5 F1300\n G90"));
 
   }
 
@@ -1587,7 +1587,7 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
     #elif defined(ACTION_ON_PAUSE)
       hostui.pause();
     #endif
-    gcode.process_subcommands_now(F("G91\n G1 E0-5 F1300\n G90"));
+    //2---------注释无用行gcode.process_subcommands_now(F("G91\n G1 E0-5 F1300\n G90"));
   }
 
   void MarlinUI::resume_print() {

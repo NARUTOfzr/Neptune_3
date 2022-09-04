@@ -1523,7 +1523,7 @@ void prepare_line_to_destination() {
     feedRate_t home_fr_mm_s = fr_mm_s ?: homing_feedrate(axis);
     //Z HOMING SLOW
     if(axis == Z_AXIS){
-       home_fr_mm_s = 0.3;
+      //home_fr_mm_s = 1.5;/*0.3*///2-------注释-禁用该速度，启用配置文件中的回原点速度为第一次下降速度
     }
 
     if (DEBUGGING(LEVELING)) {

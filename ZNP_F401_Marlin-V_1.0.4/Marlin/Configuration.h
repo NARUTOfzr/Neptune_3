@@ -1186,7 +1186,8 @@
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
-#define PROBING_MARGIN 20
+//2----------探测更边上的范围
+#define PROBING_MARGIN 15
 
 // X and Y axis travel speed (mm/min) between probes (133*60)//
 #define XY_PROBE_FEEDRATE (40*60)
@@ -1213,12 +1214,15 @@
  * Useful for a strain gauge or piezo sensor that needs to factor out
  * elements such as cables pulling on the carriage.
  */
-//#define PROBE_TARE
+
+//2--------使用去皮，更灵活配合使用调平传感器
+#define PROBE_TARE
 #if ENABLED(PROBE_TARE)
-  #define PROBE_TARE_TIME  200    // (ms) Time to hold tare pin
-  #define PROBE_TARE_DELAY 200    // (ms) Delay after tare before
-  #define PROBE_TARE_STATE HIGH   // State to write pin for tare
+  #define PROBE_TARE_TIME  10    //200 (ms) Time to hold tare pin
+  #define PROBE_TARE_DELAY 250    //200 (ms) Delay after tare before
+  #define PROBE_TARE_STATE LOW    //HIGH   // State to write pin for tare
   //#define PROBE_TARE_PIN PA5    // Override default pin
+  #define PROBE_TARE_PIN PC13    // Override default pin
   #if ENABLED(PROBE_ACTIVATION_SWITCH)
     //#define PROBE_TARE_ONLY_WHILE_INACTIVE  // Fail to tare/probe if PROBE_ACTIVATION_SWITCH is active
   #endif
@@ -1557,8 +1561,8 @@
  * these options to restore the prior leveling state or to always enable
  * leveling immediately after G28.
  */
-#define RESTORE_LEVELING_AFTER_G28
-//#define ENABLE_LEVELING_AFTER_G28
+//#define RESTORE_LEVELING_AFTER_G28
+#define ENABLE_LEVELING_AFTER_G28
 
 /**
  * Auto-leveling needs preheating
@@ -1614,6 +1618,8 @@
 
 #if EITHER(AUTO_BED_LEVELING_LINEAR, AUTO_BED_LEVELING_BILINEAR)
 
+
+  //2--------设置网格探测点数量
   // Set the number of grid points per dimension.
   #define GRID_MAX_POINTS_X 4
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
@@ -1631,6 +1637,9 @@
     // Experimental Subdivision of the grid by Catmull-Rom method.
     // Synthesizes intermediate points to produce a more detailed mesh.
     //
+
+    
+    //2---------探测点之间的细分数
     //#define ABL_BILINEAR_SUBDIVISION
     #if ENABLED(ABL_BILINEAR_SUBDIVISION)
       // Number of subdivisions between probe points
@@ -1726,7 +1735,8 @@
  * Commands to execute at the end of G29 probing.
  * Useful to retract or move the Z probe out of the way."G1 Z10 F12000\nG1 X15 Y330\nG1 Z0.5\nG1 Z10"
  */
-#define Z_PROBE_END_SCRIPT "M500\nM501\nG28 Z\nG90\nG1 Z0.1 F60"   //1---
+//2--------调平后的动作
+#define Z_PROBE_END_SCRIPT "M500\nM501\nG28 Z\nG90\nG1 Z0.1 F60"
 
 // @section homing
 
@@ -1749,6 +1759,8 @@
  * - Allows Z homing only when XY positions are known and trusted.
  * - If stepper drivers sleep, XY homing may be required again before Z homing.
  */
+
+//2--------回原点的安全位置
 #define Z_SAFE_HOMING
 
 #if ENABLED(Z_SAFE_HOMING)
@@ -1756,8 +1768,10 @@
   #define Z_SAFE_HOMING_Y_POINT Y_CENTER  // Y point for Z homing
 #endif
 
+
+//2--------G28的初始速度
 // Homing speeds (mm/min)
-#define HOMING_FEEDRATE_MM_M { (50*60), (50*60), (6*60) }    //1-------
+#define HOMING_FEEDRATE_MM_M { (50*60), (50*60), (0.8*60) }
 
 // Validate that endstops are triggered on homing moves
 #define VALIDATE_HOMING_ENDSTOPS
@@ -1792,6 +1806,13 @@
  *    +-------------->X     +-------------->X     +-------------->Y
  *     XY_SKEW_FACTOR        XZ_SKEW_FACTOR        YZ_SKEW_FACTOR
  */
+
+
+//999--------床倾斜补偿通过使用校正因子来校正 XY、XZ 和 ZY 轴中的不对中。
+//校正因子的范围为 -1 到 1。
+//有关计算校正因子的详细信息，请参阅配置文件中的床倾斜补偿部分。
+//
+
 //#define SKEW_CORRECTION
 
 #if ENABLED(SKEW_CORRECTION)
@@ -1804,7 +1825,7 @@
   // to override the above measurements:
   #define XY_SKEW_FACTOR 0.0
 
-  //#define SKEW_CORRECTION_FOR_Z
+  #define SKEW_CORRECTION_FOR_Z
   #if ENABLED(SKEW_CORRECTION_FOR_Z)
     #define XZ_DIAG_AC 282.8427124746
     #define XZ_DIAG_BD 282.8427124746
@@ -1816,7 +1837,7 @@
   #endif
 
   // Enable this option for M852 to set skew at runtime
-  //#define SKEW_CORRECTION_GCODE
+  #define SKEW_CORRECTION_GCODE
 #endif
 
 //=============================================================================
@@ -1850,7 +1871,7 @@
 // every couple of seconds when it can't accept commands.
 //
 #define HOST_KEEPALIVE_FEATURE        // Disable this if your host doesn't like keepalive messages
-#define DEFAULT_KEEPALIVE_INTERVAL 2  // Number of seconds between "busy" messages. Set with M113.
+#define DEFAULT_KEEPALIVE_INTERVAL 5  // Number of seconds between "busy" messages. Set with M113.
 #define BUSY_WHILE_HEATING            // Some hosts require "busy" messages even during heating
 
 //
@@ -1880,7 +1901,7 @@
 #define PREHEAT_2_TEMP_CHAMBER 35
 #define PREHEAT_2_FAN_SPEED     0 // Value from 0 to 255
 
-#define PREHEAT_AL_TEMP_HOTEND   140//180//140
+#define PREHEAT_AL_TEMP_HOTEND   0//180//140
 #define PREHEAT_AL_TEMP_BED     60//60
 
 /**

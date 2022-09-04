@@ -1428,7 +1428,11 @@
   #define SD_PROCEDURE_DEPTH 1              // Increase if you need more nested M32 calls
 
   #define SD_FINISHED_STEPPERRELEASE true   // Disable steppers when SD Print is finished
-  #define SD_FINISHED_RELEASECOMMAND "M84"  // Use "M84XYE" to keep Z enabled so your bed stays in place
+
+
+  //2---------完成打印后的动作,防止用户gcode结束代码无返回动作
+  #define SD_FINISHED_RELEASECOMMAND "G91\nG1 Z2 E-6 F300\nM84XYE"
+  //#define SD_FINISHED_RELEASECOMMAND "M84"  // Use "M84XYE" to keep Z enabled so your bed stays in place
 
   // Reverse SD sort to show "more recent" files first, according to the card's FAT.
   // Since the FAT gets out of order with usage, SDCARD_SORT_ALPHA is recommended.
@@ -1443,7 +1447,10 @@
 
   //#define MEDIA_MENU_AT_TOP               // Force the media menu to be listed on the top of the main menu
 
-  #define EVENT_GCODE_SD_ABORT "G28XY"      // G-code to run on SD Abort Print (e.g., "G28XY" or "G27")
+
+//2---------停止打印后动作&TF卡移除后动作
+  #define EVENT_GCODE_SD_ABORT "\nM220 S100\nG91\nG1 X-5 Y5 Z2 E-10 F1000\nG90\nG1 X5 Y230 F4000\nM84 X Y E\n"
+  //#define EVENT_GCODE_SD_ABORT "G28XY"      // G-code to run on SD Abort Print (e.g., "G28XY" or "G27")
 
   #if ENABLED(PRINTER_EVENT_LEDS)
     #define PE_LEDS_COMPLETED_TIME  (30*60) // (seconds) Time to keep the LED "done" color before restoring normal illumination
@@ -2238,6 +2245,8 @@
 // Control heater 0 and heater 1 in parallel.
 //#define HEATERS_PARALLEL
 
+
+//999---------一些高级设置项
 //===========================================================================
 //================================= Buffers =================================
 //===========================================================================
@@ -2305,7 +2314,7 @@
  * Currently handles M108, M112, M410, M876
  * NOTE: Not yet implemented for all platforms.
  */
-#define EMERGENCY_PARSER    //开启紧急命令解析器
+#define EMERGENCY_PARSER    //2-------开启紧急命令解析器,注释后可以正常使用M108？
 
 /**
  * Realtime Reporting (requires EMERGENCY_PARSER)

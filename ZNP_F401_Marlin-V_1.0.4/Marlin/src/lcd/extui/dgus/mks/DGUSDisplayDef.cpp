@@ -122,10 +122,10 @@ void MKS_pause_print_move() {
   // Save the current position, the raise amount, and 'already raised'
   TERN_(POWER_LOSS_RECOVERY, if (recovery.enabled) recovery.save(true, mks_park_pos.z, true));
 
-  //1--------设置暂停回抽
+  //1--------//2--------设置暂停回抽
   gcode.process_subcommands_now(PSTR("M108"));
   gcode.process_subcommands_now(PSTR("M83"));
-  gcode.process_subcommands_now(PSTR("G1 E-6 F600"));
+  gcode.process_subcommands_now(PSTR("G1 E-10 F600"));
   gcode.process_subcommands_now(PSTR("G90"));
 
 
@@ -140,6 +140,14 @@ void MKS_pause_print_move() {
 }
 
 void MKS_resume_print_move() {
+  //2--------避免客户更换材料插到底的情况
+  gcode.process_subcommands_now(PSTR("M108"));
+  gcode.process_subcommands_now(PSTR("M83"));
+  gcode.process_subcommands_now(PSTR("G1 E9 F100"));
+  gcode.process_subcommands_now(PSTR("G1 E-9 F600"));
+  gcode.process_subcommands_now(PSTR("G90"));
+
+
   destination.set(position_before_pause.x, position_before_pause.y);
   prepare_internal_move_to_destination(park_speed_xy);
   destination.z = position_before_pause.z;
@@ -148,8 +156,8 @@ void MKS_resume_print_move() {
   //1--------设置暂停回抽后恢复
   gcode.process_subcommands_now(PSTR("M108"));
   gcode.process_subcommands_now(PSTR("M83"));
-  gcode.process_subcommands_now(PSTR("G1 E6 F500"));
-  gcode.process_subcommands_now(PSTR("G1 F2000"));
+  gcode.process_subcommands_now(PSTR("G1 E10 F500"));
+  gcode.process_subcommands_now(PSTR("G1 F2000"));//2--------避免花瓶模式速度缓慢
   gcode.process_subcommands_now(PSTR("G90"));
 
 

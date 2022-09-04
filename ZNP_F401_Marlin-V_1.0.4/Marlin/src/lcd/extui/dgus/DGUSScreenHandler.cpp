@@ -705,15 +705,21 @@ void DGUSScreenHandler::HandleHeaterControl(DGUS_VP_Variable &var, void *val_ptr
 
 #if ENABLED(POWER_LOSS_RECOVERY)
 
+  //2---------屏蔽快速G28起始抬升速度
+  bool block_G28_Zup = false;
   void DGUSScreenHandler::HandlePowerLossRecovery(DGUS_VP_Variable &var, void *val_ptr) {
     uint16_t value = swap16(*(uint16_t*)val_ptr);
     if (value) {
       //dgusdisplay.WriteVariable(VP_SD_Print_Filename, &recovery.info.sd_filename[0], 32, true);
+      //2---------
+      block_G28_Zup = true;
       queue.inject(F("M1000"));
       //dgusdisplay.WriteVariable(VP_SD_Print_Filename, filelist.filename(), 32, true);
       GotoScreen(PLR_SCREEN_RECOVER);
     }
     else {
+      //2----------
+      block_G28_Zup = false;
       recovery.cancel();
       GotoScreen(PLR_SCREEN_CANCEL);
     }

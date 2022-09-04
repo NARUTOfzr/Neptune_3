@@ -369,10 +369,12 @@ void startOrResumeJob() {
 
     TERN_(POWER_LOSS_RECOVERY, recovery.purge());
 
+
+//2---------SD卡移除后执行代码&停止代码设置
     #ifdef EVENT_GCODE_SD_ABORT
-      //queue.inject(F(EVENT_GCODE_SD_ABORT));
-      gcode.process_subcommands_now(PSTR("G28XY"));
-      gcode.process_subcommands_now(PSTR("M84"));      
+      queue.inject(F(EVENT_GCODE_SD_ABORT));
+      //gcode.process_subcommands_now(PSTR("G28XY"));
+      //gcode.process_subcommands_now(PSTR("M84"));      
     #endif
     
     TERN_(PASSWORD_AFTER_SD_PRINT_ABORT, password.lock_machine());

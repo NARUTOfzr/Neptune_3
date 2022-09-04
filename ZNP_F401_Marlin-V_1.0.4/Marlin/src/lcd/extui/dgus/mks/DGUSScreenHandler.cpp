@@ -54,8 +54,6 @@
 #define PRINT_FILAMENT_SPEED    720             //mm/min
 
 
-
-
 extern uint8_t Leveling_done_flg;
 uint8_t Leveling_done_zhome_flg = 0;
 
@@ -859,16 +857,8 @@ void DGUSScreenHandler::Level_Ctrl_MKS(DGUS_VP_Variable &var, void *val_ptr) {
 
       sprintf(buf, "M109 S%d", mks_AL_default_e0_temp);
       gcode.process_subcommands_now(PSTR(buf));
-      //1-------G28中已开启
-      //gcode.process_subcommands_now(PSTR("G91"));
-      //gcode.process_subcommands_now(PSTR("G1 Z10 F800"));
-      //gcode.process_subcommands_now(PSTR("G90"));
-      //1--------设置第一个探测点抬升高度
-      gcode.process_subcommands_now(PSTR("G28"));
-      gcode.process_subcommands_now(PSTR("G91"));
-      gcode.process_subcommands_now(PSTR("G1 Z8 F300"));
-      gcode.process_subcommands_now(PSTR("G90"));
-      
+
+      //2-------G29中已开启G28   
       queue.inject_P(PSTR("G29"));
 
       #elif ENABLED(MESH_BED_LEVELING)
@@ -2203,16 +2193,7 @@ bool DGUSScreenHandler::loop() {
       gcode.process_subcommands_now(PSTR(Ebuf));
     #endif
 
-    //1-------G28中已开启
-    //gcode.process_subcommands_now(PSTR("G91"));
-    //gcode.process_subcommands_now(PSTR("G1 Z10 F800"));
-    //gcode.process_subcommands_now(PSTR("G90"));
-    //1--------设置第一个探测点抬升高度
-    gcode.process_subcommands_now(PSTR("G28"));
-    gcode.process_subcommands_now(PSTR("G91"));
-    gcode.process_subcommands_now(PSTR("G1 Z8 F300"));
-    gcode.process_subcommands_now(PSTR("G90"));
-    
+    //2-------G29中已开启G28 
     queue.inject_P(PSTR("G29"));
   }
 
@@ -2286,8 +2267,8 @@ bool DGUSScreenHandler::loop() {
       if(recovery_flg == true)
       {
         //if((thermalManager.temp_hotend[0].target!=0)&&(thermalManager.temp_hotend[0].target <= thermalManager.temp_hotend[0].celsius))
-      if((thermalManager.temp_hotend[0].target!=0)&&(millis()-recovery_ms)>=1000*360)
-      {
+        if((thermalManager.temp_hotend[0].target!=0)&&(millis()-recovery_ms)>=1000*360)
+        {
           recovery_flg = false;
         }
       }
