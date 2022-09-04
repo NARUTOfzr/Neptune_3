@@ -42,7 +42,8 @@
 //===========================================================================
 
 
-#define UI_VERSION "        V1_1.0.3"
+#define UI_VERSION "        V1_1.0.4"
+//#define UI_VERSION "        V1_1.0.3"
 
 /**
  * Here are some useful links to help get your machine configured and calibrated:
