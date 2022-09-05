@@ -525,8 +525,8 @@ void CardReader::release() {
   // Card removed while printing? Abort!
   //999---------卡移除后动作，值得改进
   if (IS_SD_PRINTING())
-    //abortFilePrintSoon();
-    pauseSDPrint();
+    abortFilePrintSoon();
+    //pauseSDPrint();
     //endFilePrintNow();
   else
     endFilePrintNow();
