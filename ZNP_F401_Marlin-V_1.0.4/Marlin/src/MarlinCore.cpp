@@ -369,7 +369,7 @@ void startOrResumeJob() {
 
     TERN_(POWER_LOSS_RECOVERY, recovery.purge());
 
-
+//999-------
 //2---------SD卡移除后执行代码&停止代码设置
     #ifdef EVENT_GCODE_SD_ABORT
       queue.inject(F(EVENT_GCODE_SD_ABORT));

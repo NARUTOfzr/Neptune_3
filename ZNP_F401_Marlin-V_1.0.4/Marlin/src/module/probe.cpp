@@ -794,7 +794,7 @@ float Probe::probe_at_point(const_float_t rx, const_float_t ry, const ProbePtRai
   if (!isnan(measured_z)) {
     const bool big_raise = raise_after == PROBE_PT_BIG_RAISE;
     if (big_raise || raise_after == PROBE_PT_RAISE)
-      do_blocking_move_to_z(current_position.z + (big_raise ? 25 : Z_CLEARANCE_BETWEEN_PROBES), z_probe_fast_mm_s*5);//2----------1---------第二次Z抬升速度//如果是大的上升，则移动到当前的Z值加上25或者Z_CLEARANCE_BETWEEN_PROBES
+      do_blocking_move_to_z(current_position.z + (big_raise ? 25 : Z_CLEARANCE_BETWEEN_PROBES), z_probe_fast_mm_s*7);//2----------1---------第二次Z抬升速度//如果是大的上升，则移动到当前的Z值加上25或者Z_CLEARANCE_BETWEEN_PROBES
     else if (raise_after == PROBE_PT_STOW || raise_after == PROBE_PT_LAST_STOW)
       if (stow()) measured_z = NAN;   // Error on stow?
 

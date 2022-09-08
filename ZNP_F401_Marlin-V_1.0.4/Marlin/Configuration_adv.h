@@ -842,7 +842,7 @@
 //#define SENSORLESS_BACKOFF_MM  { 2, 2, 0 }  // (mm) Backoff from endstops before sensorless homing
 
 #define HOMING_BUMP_MM      { 5, 5, 2 }       // (mm) Backoff from endstops after first bump
-#define HOMING_BUMP_DIVISOR { 3, 3, 2 }       // Re-Bump Speed Divisor (Divides the Homing Feedrate)
+#define HOMING_BUMP_DIVISOR { 3, 3, 3 }       // Re-Bump Speed Divisor (Divides the Homing Feedrate)
 
 //#define HOMING_BACKOFF_POST_MM { 2, 2, 2 }  // (mm) Backoff from endstops after homing
 
@@ -1433,7 +1433,7 @@
 
 
   //2---------完成打印后的动作,防止用户gcode结束代码无返回动作
-  #define SD_FINISHED_RELEASECOMMAND "G91\nG1 Z2 E-6 F300\nM84XYE"
+  #define SD_FINISHED_RELEASECOMMAND "\nM220 S100\nG91\nG1 Z2 E-6 F300\nM84XYE"
   //#define SD_FINISHED_RELEASECOMMAND "M84"  // Use "M84XYE" to keep Z enabled so your bed stays in place
 
   // Reverse SD sort to show "more recent" files first, according to the card's FAT.
@@ -1451,7 +1451,7 @@
 
 
 //2---------停止打印后动作&TF卡移除后动作
-  #define EVENT_GCODE_SD_ABORT "\nM220 S100\nG91\nG1 X-5 Y5 Z2 E-10 F1000\nG90\nG1 X5 Y230 F4000\nM84 X Y E\n"
+  #define EVENT_GCODE_SD_ABORT "\nM220 S100\nG91\nG1 Z2 E-10 F1000\nG90\nG1 X0 Y0 F4000\nM84 X Y E\n"
   //#define EVENT_GCODE_SD_ABORT "G28XY"      // G-code to run on SD Abort Print (e.g., "G28XY" or "G27")
 
   #if ENABLED(PRINTER_EVENT_LEDS)
