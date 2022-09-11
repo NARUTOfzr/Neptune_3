@@ -14,7 +14,8 @@ Neptune3-Firmware Update Notes.docx
 |-------------------|--------------------|
 | Screen Firmware Version | Mainboard Firmware Version |
 | V0 | 停止下载/stop  download |
-| V1 |V1.0.2 / V1_1.0.3 |
+| V1 |V1.0.2 / V1_1.0.3 / V1_1.0.4  |
+
 
 
 
