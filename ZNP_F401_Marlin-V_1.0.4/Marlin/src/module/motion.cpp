@@ -1807,6 +1807,7 @@ void prepare_line_to_destination() {
     //
     // Fast move towards endstop until triggered
     //
+    //999---------可能是G28中快速抬升速度
     const float move_length = 1.5f * max_length(TERN(DELTA, Z_AXIS, axis)) * axis_home_dir;
     if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("Home Fast: ", move_length, "mm");
     do_homing_move(axis, move_length, 0.0, !use_probe_bump);

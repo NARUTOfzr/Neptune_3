@@ -2244,6 +2244,8 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     }
   #endif // HAS_EXTRUDERS
 
+
+//999----------这里是避免缓存清空出现停顿的动作
   if (esteps)
     NOLESS(fr_mm_s, settings.min_feedrate_mm_s);
   else
