@@ -62,8 +62,8 @@ Neptune3-Firmware Update Notes.docx
 - Improved on firmware V1_1.0.3.
 - G28 return to the origin speed and G29 leveling speed were optimized again.
 - Fixed a bug in the power-off continuation function where the nozzle distance from the model was too high when recovering print.(Note: If the Z-axis drops or the model falls off after power-off, the power-off refill function cannot be used normally).
-- Optimize print operations. In the printing process, after clicking [Pause], the extrusion machine will draw back 10mm to prevent material leakage.
-- Optimize print operations. After pausing printing, click "Resume" to extrude 9mm→ pull back 9mm→ move to the printing position → continue normal printing. Avoid the empty print problem.
+- Optimize print operations. In the printing process, after clicking 【Pause】, the extrusion machine will draw back 10mm to prevent material leakage.
+- Optimize print operations. After pausing printing, click 【Resume】 to extrude 9mm→ pull back 9mm→ move to the printing position → continue normal printing. Avoid the empty print problem.
 
 
 
