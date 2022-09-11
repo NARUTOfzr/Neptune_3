@@ -516,6 +516,8 @@ void PrintJobRecovery::resume() {
     gcode.process_subcommands_now(F("G1E" STRINGIFY(POWER_LOSS_RETRACT_LEN) "F3000"));
   #endif
 
+
+//999--------断电恢复的动作
   // Additional purge on resume if configured
   #if POWER_LOSS_PURGE_LEN
     sprintf_P(cmd, PSTR("G1 E%d F3000"), (POWER_LOSS_PURGE_LEN) + (POWER_LOSS_RETRACT_LEN));

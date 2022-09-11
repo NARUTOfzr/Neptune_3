@@ -1466,6 +1466,8 @@
    * an option on the LCD screen to continue the print from the last-known
    * point in the file.
    */
+
+  //999---------断电恢复
   #define POWER_LOSS_RECOVERY
   #if ENABLED(POWER_LOSS_RECOVERY)
     #define PLR_ENABLED_DEFAULT   true // Power Loss Recovery enabled by default. (Set with 'M413 Sn' & M500)
