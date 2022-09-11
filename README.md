@@ -57,12 +57,16 @@ Neptune3-Firmware Update Notes.docx
 #### V1_1.0.4（Update in the future）
 - 在固件V1_1.0.3基础上改进。
 - 再次优化G28回原点速度和G29调平速度。
+- 修改默认调平温度。热端：0℃  / 热床：60℃ 。仍然可以在【设置】中修改调平温度。
+- 默认Z-Offset=0.1 。通常情况下，调平后可以直接选择gcode文件打印，无需设置Z-Offset。
 - 修复断电续打功能bug：恢复打印时喷嘴距离模型很高。（注意：如果断电后Z轴掉落或者模型脱落也会导致断电续打失败）。
 - 优化打印操作。打印过程中，点击【暂停】后挤出机会先回抽10mm，以防止漏料。
 - 优化打印操作。暂停打印后，点击【恢复】会先挤出9mm→回抽9mm→移动到打印位置→继续正常打印，避免了换料或暂停打印后出现的缺料问题。
 - 优化打印操作。点击【停止】打印后挤出机会回抽10mm，以防止漏料。
 - Improved on firmware V1_1.0.3.
 - G28 return to the origin speed and G29 leveling speed were optimized again.
+- Change the default leveling temperature. Hot end: 0℃ / hot bed: 60℃.You can still change the 【leveling temperature】 in 【Settings】.
+- The default value is 【z-offset =0.1】. In general, you do not need to set the z-offset after leveling.
 - Fixed a bug in the power-off continuation function where the nozzle distance from the model was too high when recovering print.(Note: If the Z-axis drops or the model falls off after power-off, the power-off refill function cannot be used normally).
 - Optimize print operations. In the printing process, after clicking 【Pause】, the extrusion machine will draw back 10mm to prevent material leakage.
 - Optimize print operations. After pausing printing, click 【Resume】 to extrude 9mm→ pull back 9mm→ move to the printing position → continue normal printing. Avoid the empty print problem.
