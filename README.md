@@ -1,11 +1,10 @@
-# Neptune_3
-  source code
-
-Neptune3-Firmware Update Notes.docx
+# Neptune 3
+- More product updates and tutorial materials are in the works.
 
 
-## 说明
-- 请根据以下兼容性关系更新主板和屏幕固件。
+## 说明/Brief description
+- 固件的升级方法请参见: Neptune3-Firmware Update Notes.docx
+- For details about how to upgrade the Firmware, see: Neptune3-Firmware Update Notes.docx
 
 
 ## 屏幕固件与主板固件兼容关系
