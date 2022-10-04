@@ -4,7 +4,9 @@
 
 ## 说明/Brief description
 - 固件的升级方法请参见: Neptune3-Firmware Update Notes.docx
+- 在【设置】→【关于机器】中查看当前屏幕版本。如果UI版本没有显示，则需要更新屏幕固件和主板固件。如果UI版本显示为V1，则只需要更新主板固件。
 - For details about how to upgrade the Firmware, see: Neptune3-Firmware Update Notes.docx
+- Check the current screen version in Settings → About the Machine. If the UI version is not displayed, you need to update the screen firmware as well as the motherboard firmware. If the UI version (V1) is displayed, only the motherboard firmware needs to be updated.
 
 
 ## 屏幕固件与主板固件兼容关系
