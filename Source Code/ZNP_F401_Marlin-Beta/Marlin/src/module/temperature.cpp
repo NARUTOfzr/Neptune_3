@@ -741,11 +741,11 @@ volatile bool Temperature::raw_temps_ready = false;
               }
               else if (ELAPSED(ms, temp_change_ms))                   // Watch timer expired
                 _temp_error(heater_id, FPSTR(str_t_heating_failed), GET_TEXT_F(MSG_HEATING_FAILED_LCD));
-                ScreenHandler.GotoScreen(MKSLCD_Screen_ERR6_POPUP);
+                ScreenHandler.GotoScreen(DGUSLCD_SCREEN_MAIN);
             }
             else if (current_temp < target - (MAX_OVERSHOOT_PID_AUTOTUNE)) // Heated, then temperature fell too far?
               _temp_error(heater_id, FPSTR(str_t_thermal_runaway), GET_TEXT_F(MSG_THERMAL_RUNAWAY));
-              ScreenHandler.GotoScreen(MKSLCD_Screen_ERR7_POPUP);
+              ScreenHandler.GotoScreen(DGUSLCD_SCREEN_MAIN);
           }
         #endif
       } // every 2 seconds

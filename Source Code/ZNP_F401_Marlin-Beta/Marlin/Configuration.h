@@ -42,7 +42,7 @@
 //===========================================================================
 
 
-#define UI_VERSION "      V1_1.0.4-a"
+#define UI_VERSION "      V1_1.0.5-A"
 //#define UI_VERSION "        V1_1.0.3"
 
 /**
@@ -627,7 +627,7 @@
  * heater. If your configuration is significantly different than this and you don't understand
  * the issues involved, don't use bed PID until someone else verifies that your hardware works.
  */
-//#define PIDTEMPBED
+#define PIDTEMPBED          //3--------开启热床PID
 
 //#define BED_LIMIT_SWITCHING
 
