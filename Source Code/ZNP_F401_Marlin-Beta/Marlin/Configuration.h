@@ -43,6 +43,7 @@
 
 
 #define UI_VERSION "      V1_1.0.5-A"
+//999---------测试
 //#define UI_VERSION "        V1_1.0.3"
 
 /**
