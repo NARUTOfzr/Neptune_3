@@ -14,8 +14,8 @@
 |   屏幕固件版本   |     主板固件版本    | 
 |-------------------|--------------------|
 | Screen Firmware Version | Mainboard Firmware Version |
-| V0 | 停止下载/stop  download |
-| V1 |V1.0.2 / V1_1.0.3 / V1_1.0.4  |
+| V0 | V1.0.2/停止下载/stop  download |
+| V1 | V1_1.0.3 / V1_1.0.4  |
 
 
 
@@ -55,7 +55,7 @@
 - To solve the problem that the Z-offset adjusted during printing will not be saved：During printing, click 【stop】→【confirm】 or click 【confirm】 after printing is completed, the Z-offset value will be saved automatically. 
 
 
-#### V1_1.0.4（Update in the future）
+#### V1_1.0.4
 - 在固件V1_1.0.3基础上改进。
 - 再次优化G28回原点速度和G29调平速度。
 - 修改默认调平温度。热端：0℃  / 热床：60℃ 。仍然可以在【设置】中修改调平温度。
@@ -72,6 +72,16 @@
 - Optimize print operations. In the printing process, after clicking 【Pause】, the extrusion machine will draw back 10mm to prevent material leakage.
 - Optimize print operations. After pausing printing, click 【Resume】 to extrude 9mm→ pull back 9mm→ move to the printing position → continue normal printing. Avoid the empty print problem.
 - Optimize print operations. After clicking 【Stop】 to print, the extrusion machine will draw back 10mm to prevent material leakage.
+
+#### V1_1.0.5-Beta
+- 在固件V1_1.0.5基础上改进。
+- 开启HOST_ACTION_COMMANDS。实现octoprint联机交互功能。
+- 启用LIN_ADVANCE。默认K = 0。（此功能需要自行调试，参见：https://marlinfw.org/docs/features/lin_advance.html）
+- 新增M853命令，改善自动调平后仍然不能正常自动补偿的问题。（该功能使用说明正在制作中）
+
+
+
+
 
 
 
