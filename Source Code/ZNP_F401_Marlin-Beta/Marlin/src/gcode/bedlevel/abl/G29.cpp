@@ -219,8 +219,11 @@ public:
  *     There's no extra effect if you have a fixed Z probe.
  */
 G29_TYPE GcodeSuite::G29() {
+  //uint8_t badval = 0, setval = 0;
 
   //2-------G28放在这里，解决联机时调平第一点不抬升问题
+  
+  gcode.process_subcommands_now(PSTR("M853 L0 M0"));
   gcode.process_subcommands_now(PSTR("G28"));
   gcode.process_subcommands_now(PSTR("G91"));
   gcode.process_subcommands_now(PSTR("G1 Z8 F300"));

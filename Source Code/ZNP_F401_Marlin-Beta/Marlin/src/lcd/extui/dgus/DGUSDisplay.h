@@ -36,7 +36,7 @@
 
 enum DGUSLCD_Screens : uint8_t;
 
-// #define DEBUG_DGUSLCD
+//#define DEBUG_DGUSLCD    //999---------
 #define DEBUG_OUT ENABLED(DEBUG_DGUSLCD)
 #include "../../../core/debug_out.h"
 

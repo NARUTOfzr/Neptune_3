@@ -334,12 +334,15 @@ bool printingIsActive() { return !did_pause_print && printJobOngoing(); }
 /**
  * Printing is paused according to SD or host indicators
  */
+//999-------值得研究
 bool printingIsPaused() {
+  //wait_for_user = false;
   return did_pause_print || print_job_timer.isPaused() || IS_SD_PAUSED();
 }
 
 void startOrResumeJob() {
   if (!printingIsPaused()) {
+    //wait_for_user = false;
     TERN_(GCODE_REPEAT_MARKERS, repeat.reset());
     TERN_(CANCEL_OBJECTS, cancelable.reset());
     TERN_(LCD_SHOW_E_TOTAL, e_move_accumulator = 0);
@@ -348,6 +351,8 @@ void startOrResumeJob() {
     #endif
   }
   print_job_timer.start();
+  //wait_for_user = false;
+  //wait_for_heatup = true;
 }
 
 #if ENABLED(SDSUPPORT)
@@ -369,8 +374,8 @@ void startOrResumeJob() {
 
     TERN_(POWER_LOSS_RECOVERY, recovery.purge());
 
-//999-------
-//2---------SD卡移除后执行代码&停止代码设置
+    //999-------
+    //2---------SD卡移除后执行代码&停止代码设置
     #ifdef EVENT_GCODE_SD_ABORT
       queue.inject(F(EVENT_GCODE_SD_ABORT));
       //gcode.process_subcommands_now(PSTR("G28XY"));

@@ -268,6 +268,7 @@
  * M810-M819 - Define/execute a G-code macro (Requires GCODE_MACROS)
  * M851 - Set Z probe's XYZ offsets in current units. (Negative values: X=left, Y=front, Z=below)
  * M852 - Set skew factors: "M852 [I<xy>] [J<xz>] [K<yz>]". (Requires SKEW_CORRECTION_GCODE, plus SKEW_CORRECTION_FOR_Z for IJ)
+ * M853 - Set skew factors: "M853 [L<zx>] [M<zy>]". (SKEW_CORRECTION_GCODE)
  *
  *** I2C_POSITION_ENCODERS ***
  * M860 - Report the position of position encoder modules.
@@ -1101,6 +1102,11 @@ private:
   #if ENABLED(SKEW_CORRECTION_GCODE)
     static void M852();
     static void M852_report(const bool forReplay=true);
+  #endif
+
+  #if ENABLED(GRID_SKEW_COMPENSATION)
+    static void M853();
+    static void M853_report(const bool forReplay=true);
   #endif
 
   #if ENABLED(I2C_POSITION_ENCODERS)

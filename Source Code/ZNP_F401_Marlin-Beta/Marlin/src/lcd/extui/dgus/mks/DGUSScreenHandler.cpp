@@ -248,13 +248,13 @@ void DGUSScreenHandler::DGUSLCD_SendTMCStepValue(DGUS_VP_Variable &var) {
         //if (runout_mks.runout_status != RUNOUT_WAITTING_STATUS && runout_mks.runout_status != UNRUNOUT_STATUS) {
 		if (runout_mks.runout_status == RUNOUT_STATUS) {
 		  if (cs == MKSLCD_SCREEN_PRINT || cs == MKSLCD_SCREEN_PAUSE)
-            GotoScreen(MKSLCD_SCREEN_PAUSE);
+             GotoScreen(MKSLCD_SCREEN_PAUSE);
           return;
         }
         else
           runout_mks.runout_status = UNRUNOUT_STATUS;
 
-        GotoScreen(MKSLCD_SCREEN_PRINT);
+          GotoScreen(MKSLCD_SCREEN_PRINT);
 
         if (ExtUI::isPrintingFromMediaPaused()) {
           nozzle_park_mks.print_pause_start_flag = 0;
@@ -342,15 +342,17 @@ void DGUSScreenHandler::ScreenChangeHook(DGUS_VP_Variable &var, void *val_ptr) {
   // if robin nano is printing. when it is, dgus will enter the printing
   // page to continue print;
   //
-  //if (printJobOngoing() || printingIsPaused()) {
-  //  if (target == MKSLCD_PAUSE_SETTING_MOVE || target == MKSLCD_PAUSE_SETTING_EX
-  //    || target == MKSLCD_SCREEN_PRINT || target == MKSLCD_SCREEN_PAUSE
-  //  ) {
-  //  }
-  //  else
-  //    GotoScreen(MKSLCD_SCREEN_PRINT);
-  // return;
-  //}
+  //999-----------测试
+  if (printJobOngoing() || printingIsPaused()) {
+    if (/*target == MKSLCD_PAUSE_SETTING_MOVE || target == MKSLCD_PAUSE_SETTING_EX
+      ||*/ target == MKSLCD_SCREEN_PRINT || target == MKSLCD_SCREEN_PAUSE) 
+      {
+        GotoScreen(MKSLCD_SCREEN_PAUSE);
+      }
+    else
+        GotoScreen(MKSLCD_SCREEN_PRINT);
+   return;
+  }
 #if 0
   if (target == DGUSLCD_SCREEN_POPUP) {
     SetupConfirmAction(ExtUI::setUserConfirmed);
@@ -773,8 +775,15 @@ void DGUSScreenHandler::PRINT_SETTING_HANDLER(DGUS_VP_Variable &var, void *val_p
     switch(value) {
       case 0:   
         // if( )   // 判断是否打印中
-        if(print_set_from == 0) GotoScreen(MKSLCD_SCREEN_PRINT);
-        else GotoScreen(MKSLCD_SCREEN_PAUSE);
+        if(print_set_from == 0) {
+          GotoScreen(MKSLCD_SCREEN_PRINT);
+          planner.synchronize();
+          }
+        
+        else{
+         GotoScreen(MKSLCD_SCREEN_PAUSE);
+         planner.synchronize();
+         }
       break;
         
       case 1:
@@ -1011,7 +1020,7 @@ void DGUSScreenHandler::MeshLevel(DGUS_VP_Variable &var, void *val_ptr) {
           gcode.process_subcommands_now(PSTR(Ebuf));
           planner.synchronize();
         #endif
-        queue.inject_P(PSTR("G28XY"));
+        queue.inject(F("G90\nG1 Z10 F500\nM84 XY"));
         thermalManager.temp_hotend[0].target = 0;
         thermalManager.temp_bed.target = 0; 
         GotoScreen(MKSLCD_SCREEN_HOME);
@@ -1364,7 +1373,7 @@ void DGUSScreenHandler::HandleChangeLevelPoint_MKS(DGUS_VP_Variable &var, void *
   settings.save();
   skipVP = var.VP; // don't overwrite value the next update time as the display might autoincrement in parallel
 }
-
+//999----------bug---
 void DGUSScreenHandler::HandleManualE0_T(DGUS_VP_Variable &var, void *val_ptr) 
 {
 	DEBUG_ECHOLNPGM("HandleManualE0");

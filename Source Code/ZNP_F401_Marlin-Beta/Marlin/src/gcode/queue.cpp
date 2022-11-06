@@ -560,7 +560,7 @@ void GCodeQueue::get_serial_commands() {
 
     int sd_count = 0;
     while (!ring_buffer.full() && !card.eof()) {
-      HAL_watchdog_refresh();
+      //HAL_watchdog_refresh();
       const int16_t n = card.get();
 
       const bool card_eof = card.eof();
