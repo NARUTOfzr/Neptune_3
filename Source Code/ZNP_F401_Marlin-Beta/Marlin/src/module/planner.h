@@ -667,22 +667,21 @@ class Planner {
     
     #if ENABLED(GRID_SKEW_COMPENSATION)
       FORCE_INLINE static void skew(float &cx, float &cy, float &cz) {
-        if (COORDINATE_OKAY(cx, X_MIN_POS, X_MAX_POS) && COORDINATE_OKAY(cy, Y_MIN_POS, Y_MAX_POS) && COORDINATE_OKAY(cz, Z_MIN_POS-10, Z_MAX_POS)) {
-          //const float //sx = cx/* - cy * skew_factor.xy - cz * (skew_factor.xz - (skew_factor.xy * skew_factor.yz))*/,
-                      //sy = cy/* - cz * skew_factor.yz*/,
-                      //sz = cz - (cx * skew_factor.zx + cy * skew_factor.zy)*0.01;
-                      //sz = cz - (cx * skew_factor.zx + cy * skew_factor.zy)*0.01*(10-cz)/10;
-                      //sz = cz - (((cx-117.5) * skew_factor.zx) + ((cy-117.5) * skew_factor.zy))*0.01*(10-cz)/10;
-         //if (leveling_active)
-           const float sz = cz - ((((cx-X_CENTER) * skew_factor.zx) + (((cy-Y_CENTER) * skew_factor.zy)))*((10-cz)*0.001));
-
-
-
-          if (COORDINATE_OKAY(sz, Z_MIN_POS-10, Z_MAX_POS)) 
+        if (COORDINATE_OKAY(cx, X_MIN_POS, X_MAX_POS) && COORDINATE_OKAY(cy, Y_MIN_POS, Y_MAX_POS) && COORDINATE_OKAY(cz, Z_MIN_POS, GRID_SKEW_FADE_HEIGHT) /*&& (cz < GRID_SKEW_FADE_HEIGHT)*/) 
+        {
+          const float sz = cz - ((((cx-X_CENTER) * skew_factor.zx) + (((cy-Y_CENTER) * skew_factor.zy)))*((GRID_SKEW_FADE_HEIGHT-cz)*0.001));
+          
+          if (COORDINATE_OKAY(sz, Z_MIN_POS-10, GRID_SKEW_FADE_HEIGHT)/* && (cz<GRID_SKEW_FADE_HEIGHT)*/) 
           {
            cz = sz;
           }
+          else if (COORDINATE_OKAY(sz, GRID_SKEW_FADE_HEIGHT, Z_MAX_POS) && (cz>GRID_SKEW_FADE_HEIGHT))
+          {
+            cz = cz;
+          }
+          
         }
+
       }
       FORCE_INLINE static void skew(xyz_pos_t &raw) { skew(raw.x, raw.y, raw.z); }
     #endif
