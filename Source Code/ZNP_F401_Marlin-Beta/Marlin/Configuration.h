@@ -1828,7 +1828,7 @@
 //有关计算校正因子的详细信息，请参阅配置文件中的床倾斜补偿部分。
 //
 
-//#define SKEW_CORRECTION
+#define SKEW_CORRECTION
 
 #if ENABLED(SKEW_CORRECTION)
   // Input all length measurements here:
@@ -1859,6 +1859,7 @@
   #if ENABLED(GRID_SKEW_COMPENSATION)
     #define ZX_SKEW_FACTOR 0.0
     #define ZY_SKEW_FACTOR 0.0
+    #define GRID_SKEW_FADE_HEIGHT 5.0 // (mm) Default fade height.
   #endif
 
 //=============================================================================
