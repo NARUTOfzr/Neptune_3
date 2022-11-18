@@ -334,15 +334,12 @@ bool printingIsActive() { return !did_pause_print && printJobOngoing(); }
 /**
  * Printing is paused according to SD or host indicators
  */
-//999-------值得研究
 bool printingIsPaused() {
-  //wait_for_user = false;
   return did_pause_print || print_job_timer.isPaused() || IS_SD_PAUSED();
 }
 
 void startOrResumeJob() {
   if (!printingIsPaused()) {
-    //wait_for_user = false;
     TERN_(GCODE_REPEAT_MARKERS, repeat.reset());
     TERN_(CANCEL_OBJECTS, cancelable.reset());
     TERN_(LCD_SHOW_E_TOTAL, e_move_accumulator = 0);
@@ -351,8 +348,6 @@ void startOrResumeJob() {
     #endif
   }
   print_job_timer.start();
-  //wait_for_user = false;
-  //wait_for_heatup = true;
 }
 
 #if ENABLED(SDSUPPORT)
@@ -370,7 +365,7 @@ void startOrResumeJob() {
 
     TERN(HAS_CUTTER, cutter.kill(), thermalManager.zero_fan_speeds()); // Full cutter shutdown including ISR control
 
-    wait_for_heatup = false;
+    wait_for_heatup = wait_for_user = false;
 
     TERN_(POWER_LOSS_RECOVERY, recovery.purge());
 
@@ -384,6 +379,36 @@ void startOrResumeJob() {
     
     TERN_(PASSWORD_AFTER_SD_PRINT_ABORT, password.lock_machine());
   }
+
+//3----------
+
+  /*inline void accidentSDPrinting() {
+   IF_DISABLED(NO_SD_AUTOSTART, card.autofile_cancel());
+    card.abortFilePrintNow(TERN_(SD_RESORT, true));
+
+    wait_for_heatup = wait_for_user = false;
+
+    queue.clear();
+    quickstop_stepper();
+
+    print_job_timer.abort();
+
+    IF_DISABLED(SD_ABORT_NO_COOLDOWN, thermalManager.disable_all_heaters());
+
+    TERN(HAS_CUTTER, cutter.kill(), thermalManager.zero_fan_speeds()); // Full cutter shutdown including ISR control
+
+    TERN_(POWER_LOSS_RECOVERY, recovery.purge());
+
+    //999-------
+    //2---------SD卡移除后执行代码&停止代码设置
+    #ifdef EVENT_GCODE_SD_ABORT
+      queue.inject(F(EVENT_GCODE_SD_ABORT));    
+    #endif
+    
+    TERN_(PASSWORD_AFTER_SD_PRINT_ABORT, password.lock_machine());
+  }*/
+
+
 
   inline void finishSDPrinting() {
     if (queue.enqueue_one(F("M1001"))) {  // Keep trying until it gets queued

@@ -226,7 +226,7 @@ G29_TYPE GcodeSuite::G29() {
   gcode.process_subcommands_now(PSTR("M853 L0 M0"));
   gcode.process_subcommands_now(PSTR("G28"));
   gcode.process_subcommands_now(PSTR("G91"));
-  gcode.process_subcommands_now(PSTR("G1 Z8 F300"));
+  gcode.process_subcommands_now(PSTR("G1 Z5 F300"));
   gcode.process_subcommands_now(PSTR("G90"));
 
 

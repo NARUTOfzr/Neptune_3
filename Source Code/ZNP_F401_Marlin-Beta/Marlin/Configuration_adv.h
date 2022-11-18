@@ -844,8 +844,8 @@
 
 
 //3-------G28-Z第一次触发回退距离
-#define HOMING_BUMP_MM      { 2, 2, 1 }       // (mm) Backoff from endstops after first bump
-#define HOMING_BUMP_DIVISOR { 5, 5, 3 }       // Re-Bump Speed Divisor (Divides the Homing Feedrate)
+#define HOMING_BUMP_MM      { 5, 5, 2 }       // (mm) Backoff from endstops after first bump
+#define HOMING_BUMP_DIVISOR { 3, 3, 3 }       // Re-Bump Speed Divisor (Divides the Homing Feedrate)
 
 //#define HOMING_BACKOFF_POST_MM { 2, 2, 2 }  // (mm) Backoff from endstops after homing
 
@@ -1422,7 +1422,7 @@
    */
 
   //2---------SPI速率设置
-  #define SD_SPI_SPEED SPI_FULL_SPEED//SPI_HALF_SPEED
+  #define SD_SPI_SPEED  SPI_HALF_SPEED  //SPI_FULL_SPEED//SPI_HALF_SPEED
 
   // The standard SD detect circuit reads LOW when media is inserted and HIGH when empty.
   // Enable this option and set to HIGH if your SD cards are incorrectly detected.
@@ -1486,7 +1486,7 @@
   //3---------断电恢复
   #define POWER_LOSS_RECOVERY
   #if ENABLED(POWER_LOSS_RECOVERY)
-    #define PLR_ENABLED_DEFAULT   true // Power Loss Recovery enabled by default. (Set with 'M413 Sn' & M500)
+    #define PLR_ENABLED_DEFAULT   false//true // Power Loss Recovery enabled by default. (Set with 'M413 Sn' & M500)
     //#define BACKUP_POWER_SUPPLY       // Backup power / UPS to move the steppers on power loss
     //#define POWER_LOSS_ZRAISE       2 // (mm) Z axis raise on resume (on power loss with UPS)//如果定义，必须是2
     //#define POWER_LOSS_PIN         44 // Pin to detect power loss. Set to -1 to disable default pin on boards without module.
@@ -1658,7 +1658,6 @@
   //#define SDCARD_CONNECTION LCD
 
   // Enable if SD detect is rendered useless (e.g., by using an SD extender)
-  //#define NO_SD_DETECT     //999------------有用？
   //#define NO_SD_DETECT
 
   // Multiple volume support - EXPERIMENTAL.
@@ -2337,7 +2336,7 @@
  * Currently handles M108, M112, M410, M876
  * NOTE: Not yet implemented for all platforms.
  */
-#define EMERGENCY_PARSER    //2-------开启紧急命令解析器,注释后可以正常使用M108？
+//#define EMERGENCY_PARSER    //2-------开启紧急命令解析器,注释后可以正常使用M108？
 
 /**
  * Realtime Reporting (requires EMERGENCY_PARSER)
@@ -2354,7 +2353,7 @@
  * - During Hold all Emergency Parser commands are available, as usual.
  * - Enable NANODLP_Z_SYNC and NANODLP_ALL_AXIS for move command end-state reports.
  */
-//#define REALTIME_REPORTING_COMMANDS
+#define REALTIME_REPORTING_COMMANDS
 #if ENABLED(REALTIME_REPORTING_COMMANDS)
   //#define FULL_REPORT_TO_HOST_FEATURE   // Auto-report the machine status like Grbl CNC
 #endif

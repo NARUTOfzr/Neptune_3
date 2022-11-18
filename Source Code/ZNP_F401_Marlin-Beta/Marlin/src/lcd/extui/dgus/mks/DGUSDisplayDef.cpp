@@ -123,12 +123,16 @@ void MKS_pause_print_move() {
   TERN_(POWER_LOSS_RECOVERY, if (recovery.enabled) recovery.save(true, mks_park_pos.z, true));
 
   //1--------//2--------设置暂停回抽
-  gcode.process_subcommands_now(PSTR("M108"));
-  gcode.process_subcommands_now(PSTR("M83"));
-  gcode.process_subcommands_now(PSTR("G1 E-5 F600"));
-  gcode.process_subcommands_now(PSTR("G90"));
-
-
+  //gcode.process_subcommands_now(PSTR("M108"));
+  //gcode.process_subcommands_now(PSTR("M83"));
+  //gcode.process_subcommands_now(PSTR("G1 E-5 F600"));
+  //gcode.process_subcommands_now(PSTR("G90"));
+  planner.synchronize();
+  const float olde = current_position.e;
+  current_position.e -= 7;
+  line_to_current_position(MMM_TO_MMS(1200));
+  current_position.e = olde;
+  planner.set_e_position_mm(olde);
 
   destination.z = _MIN(current_position.z + mks_park_pos.z, Z_MAX_POS);
   prepare_internal_move_to_destination(park_speed_z);
@@ -137,28 +141,41 @@ void MKS_pause_print_move() {
   prepare_internal_move_to_destination(park_speed_xy);
 
   filament_change_flg = true;
+  queue.exhaust();
+  planner.synchronize();
 }
 
 void MKS_resume_print_move() {
   //2--------避免客户更换材料插到底的情况
-  gcode.process_subcommands_now(PSTR("M108"));
-  gcode.process_subcommands_now(PSTR("M83"));
-  gcode.process_subcommands_now(PSTR("G1 E4.5 F150"));
-  gcode.process_subcommands_now(PSTR("G1 E-4.5 F600"));
-  gcode.process_subcommands_now(PSTR("G90"));
+  planner.synchronize();
+  const float olde = current_position.e;
+  current_position.e += 6;
+  line_to_current_position(MMM_TO_MMS(400));
+  current_position.e -= 6;
+  line_to_current_position(MMM_TO_MMS(1200));
+  current_position.e = olde;
+  planner.set_e_position_mm(olde);
+  planner.synchronize();
+
 
 
   destination.set(position_before_pause.x, position_before_pause.y);
   prepare_internal_move_to_destination(park_speed_xy);
   destination.z = position_before_pause.z;
   prepare_internal_move_to_destination(park_speed_z);
+  planner.synchronize();
 
   //1--------设置暂停回抽后恢复
-  gcode.process_subcommands_now(PSTR("M108"));
-  gcode.process_subcommands_now(PSTR("M83"));
-  gcode.process_subcommands_now(PSTR("G1 E5 F500"));
-  gcode.process_subcommands_now(PSTR("G1 F2000"));//2--------避免花瓶模式速度缓慢
-  gcode.process_subcommands_now(PSTR("G90"));
+  //gcode.process_subcommands_now(PSTR("M108"));
+  //gcode.process_subcommands_now(PSTR("M83"));
+  //gcode.process_subcommands_now(PSTR("G1 E5 F500"));
+  //gcode.process_subcommands_now(PSTR("G1 F2000"));//2--------避免花瓶模式速度缓慢
+  //gcode.process_subcommands_now(PSTR("G90"));
+  current_position.e += 6;
+  line_to_current_position(MMM_TO_MMS(2000));
+  current_position.e = olde;
+  planner.set_e_position_mm(olde);
+  planner.synchronize();
 
 
   TERN_(POWER_LOSS_RECOVERY, if (recovery.enabled) recovery.save(true));

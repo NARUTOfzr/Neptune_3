@@ -43,11 +43,6 @@
 
 //3--------
 #define IS_3      //定义Neptune3专用
-#if ENABLED(IS_3)
-     #define UI_VERSION "   V1_1.0.5_Beta"
-     //#define UI_VERSION "        V1_1.0.4"
-#else
-#endif
 
 /**
  * Here are some useful links to help get your machine configured and calibrated:
@@ -634,7 +629,7 @@
  * heater. If your configuration is significantly different than this and you don't understand
  * the issues involved, don't use bed PID until someone else verifies that your hardware works.
  */
-//#define PIDTEMPBED
+#define PIDTEMPBED
 
 //#define BED_LIMIT_SWITCHING
 
@@ -652,9 +647,10 @@
 
   // 120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
   // from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
-  #define DEFAULT_bedKp 10.00
-  #define DEFAULT_bedKi .023
-  #define DEFAULT_bedKd 305.4
+  //M304 P97.10 I1.41 D1675.16
+  #define DEFAULT_bedKp 97.1
+  #define DEFAULT_bedKi 1.41
+  #define DEFAULT_bedKd 1678.16
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED
@@ -959,11 +955,11 @@
  * Override with M201
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_ACCELERATION      { 1000, 800, 500, 1000 }     //1------最高加速度
+#define DEFAULT_MAX_ACCELERATION      { 1000, 800, 200, 1000 }     //1------最高加速度
 
 #define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
-  #define MAX_ACCEL_EDIT_VALUES       { 3000, 2000, 500, 3000 } // ...or, set your own edit limits
+  #define MAX_ACCEL_EDIT_VALUES       { 2000, 1000, 200, 3000 } // ...or, set your own edit limits
 #endif
 
 /**
@@ -974,9 +970,9 @@
  *   M204 R    Retract Acceleration
  *   M204 T    Travel Acceleration
  */
-#define DEFAULT_ACCELERATION          1000    // X, Y, Z and E acceleration for printing moves
-#define DEFAULT_RETRACT_ACCELERATION  1000    // E acceleration for retracts
-#define DEFAULT_TRAVEL_ACCELERATION   1000    // X, Y, Z acceleration for travel (non printing) moves
+#define DEFAULT_ACCELERATION          3000    // X, Y, Z and E acceleration for printing moves
+#define DEFAULT_RETRACT_ACCELERATION  3000    // E acceleration for retracts
+#define DEFAULT_TRAVEL_ACCELERATION   3000    // X, Y, Z acceleration for travel (non printing) moves
 
 /**
  * Default Jerk limits (mm/s)
@@ -1232,7 +1228,7 @@
 #define PROBE_TARE
 #if ENABLED(PROBE_TARE)
   #define PROBE_TARE_TIME  10    //200 (ms) Time to hold tare pin
-  #define PROBE_TARE_DELAY 250    //200 (ms) Delay after tare before
+  #define PROBE_TARE_DELAY 300    //200 (ms) Delay after tare before
   #define PROBE_TARE_STATE LOW    //HIGH   // State to write pin for tare
   //#define PROBE_TARE_PIN PA5    // Override default pin
   #define PROBE_TARE_PIN PC13    // Override default pin
@@ -1828,7 +1824,7 @@
 //有关计算校正因子的详细信息，请参阅配置文件中的床倾斜补偿部分。
 //
 
-#define SKEW_CORRECTION
+//#define SKEW_CORRECTION
 
 #if ENABLED(SKEW_CORRECTION)
   // Input all length measurements here:
