@@ -289,24 +289,27 @@ void GcodeSuite::G28() {
     #if ENABLED(POWER_LOSS_RECOVERY)
       if(!block_G28_Zup)
       {
-        gcode.process_subcommands_now(PSTR("M84 Z"));//避免光电传感器一直被遮挡的bug
+        //gcode.process_subcommands_now(PSTR("M84 Z"));//避免光电传感器一直被遮挡的bug
         gcode.process_subcommands_now(PSTR("G91"));
-        gcode.process_subcommands_now(PSTR("G1 Z-0.2 F100"));//2--------避免新传感器固件bug,如果回原点前喷嘴压着平台，导致Z原点数值偏低，整体调平值偏高。
-        gcode.process_subcommands_now(PSTR("G1 Z2 F600"));//先压一下再快速抬升，使传感器重置
-        gcode.process_subcommands_now(PSTR("G1 Z8 F300"));//先压一下再快速抬升，使传感器重置
+        //gcode.process_subcommands_now(PSTR("G1 Z-0.2 F100"));//2--------避免新传感器固件bug,如果回原点前喷嘴压着平台，导致Z原点数值偏低，整体调平值偏高。
+        //gcode.process_subcommands_now(PSTR("G1 Z2 F600"));//先压一下再快速抬升，使传感器重置
+        gcode.process_subcommands_now(PSTR("G1 Z8 F400"));//先压一下再快速抬升，使传感器重置
         gcode.process_subcommands_now(PSTR("G90"));
+
+        //queue.inject(F(RESTORE_GCODE));
       }
       else
       {
         block_G28_Zup = false;
       }
     #else
-        gcode.process_subcommands_now(PSTR("M84 Z"));
+        //gcode.process_subcommands_now(PSTR("M84 Z"));
         gcode.process_subcommands_now(PSTR("G91"));
-        gcode.process_subcommands_now(PSTR("G1 Z-0.2 F100"));//2--------避免新传感器固件bug,如果回原点前喷嘴压着平台，导致Z原点数值偏低，整体调平值偏高。
-        gcode.process_subcommands_now(PSTR("G1 Z2 F600"));//先压一下再快速抬升，使传感器重置
-        gcode.process_subcommands_now(PSTR("G1 Z8 F300"));//先压一下再快速抬升，使传感器重置
+        //gcode.process_subcommands_now(PSTR("G1 Z-0.2 F100"));//2--------避免新传感器固件bug,如果回原点前喷嘴压着平台，导致Z原点数值偏低，整体调平值偏高。
+        //gcode.process_subcommands_now(PSTR("G1 Z2 F600"));//先压一下再快速抬升，使传感器重置
+        gcode.process_subcommands_now(PSTR("G1 Z8 F400"));//先压一下再快速抬升，使传感器重置
         gcode.process_subcommands_now(PSTR("G90"));
+        //queue.inject(F(RESTORE_GCODE));
     #endif
   
   #endif

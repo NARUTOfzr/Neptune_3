@@ -22,6 +22,22 @@
 #pragma once
 
 /**
+ * Neptune 3：Board Firmware version.
+ */
+#if ENABLED(IS_3)
+     //#define UI_VERSION "        V1_1.0.4"
+     #define UI_VERSION "   V1_1.0.5_Beta"
+
+    #ifndef UI_VERSION
+    #define UI_VERSION "   V1_1.0.5_Beta"
+    #endif
+#else
+    #ifndef UI_VERSION
+    #define UI_VERSION "  V1_1.0.5_Beta0"
+    #endif
+#endif
+
+/**
  * Release version. Leave the Marlin version or apply a custom scheme.
  */
 #ifndef SHORT_BUILD_VERSION

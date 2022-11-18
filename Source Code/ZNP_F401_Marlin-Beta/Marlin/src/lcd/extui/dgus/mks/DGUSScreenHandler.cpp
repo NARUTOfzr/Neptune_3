@@ -50,12 +50,13 @@
   static ExtUI::FileList filelist;
 #endif
 
-#define PRINT_FILAMENT_LENGTH   370             //mm
-#define PRINT_FILAMENT_SPEED    720             //mm/min
+#define PRINT_FILAMENT_LENGTH   380             //mm
+#define PRINT_FILAMENT_SPEED    1200             //mm/min
 
 
 extern uint8_t Leveling_done_flg;
 uint8_t Leveling_done_zhome_flg = 0;
+uint8_t print_set_from = 0 ,Filament_UnLoad_Stop = 0 ,waiting_confirm = 0;
 
 extern bool filament_change_flg;
 bool loadfilament_confirm_flg=false;
@@ -239,38 +240,41 @@ void DGUSScreenHandler::DGUSLCD_SendTMCStepValue(DGUS_VP_Variable &var) {
     }
   }
   void DGUSScreenHandler::DGUSLCD_SD_ResumePauseAbort(DGUS_VP_Variable &var, void *val_ptr) {
-
-    if (!ExtUI::isPrintingFromMedia()) return; // avoid race condition when user stays in this menu and printer finishes.
+        auto cs = getCurrentScreen();
     switch (swap16(*(uint16_t*)val_ptr)) {
       case 0: { // Resume
+        if (!ExtUI::isPrintingFromMedia()) return;
 
-        auto cs = getCurrentScreen();
         //if (runout_mks.runout_status != RUNOUT_WAITTING_STATUS && runout_mks.runout_status != UNRUNOUT_STATUS) {
-		if (runout_mks.runout_status == RUNOUT_STATUS) {
-		  if (cs == MKSLCD_SCREEN_PRINT || cs == MKSLCD_SCREEN_PAUSE)
-            GotoScreen(MKSLCD_SCREEN_PAUSE);
-          return;
+		    if (runout_mks.runout_status == RUNOUT_STATUS) {
+          if (cs == MKSLCD_SCREEN_PRINT || cs == MKSLCD_SCREEN_PAUSE)
+              //nozzle_park_mks.print_pause_start_flag = 1;
+              GotoScreen(MKSLCD_SCREEN_PAUSE);
+            return;
         }
         else
           runout_mks.runout_status = UNRUNOUT_STATUS;
-
-        GotoScreen(MKSLCD_SCREEN_PRINT);
-
-        if (ExtUI::isPrintingFromMediaPaused()) {
+          if (cs == MKSLCD_SCREEN_PRINT/* || printingIsActive()*/) return;
+          if (ExtUI::isPrintingFromMediaPaused()) {
           nozzle_park_mks.print_pause_start_flag = 0;
           nozzle_park_mks.blstatus = true;
+          print_set_from = 0;
+          //waiting_confirm = 0;
           ExtUI::resumePrint();
+          planner.synchronize();
+          GotoScreen(MKSLCD_SCREEN_PRINT);
         }
       } break;
 
       case 1: // Pause
-
-        GotoScreen(MKSLCD_SCREEN_PAUSE);
-        if (!ExtUI::isPrintingFromMediaPaused()) {
+        if (!ExtUI::isPrintingFromMedia() || cs == MKSLCD_SCREEN_PAUSE) return;
+        
+        if (!ExtUI::isPrintingFromMediaPaused() && printingIsActive() && nozzle_park_mks.print_pause_start_flag == 0) {
+          GotoScreen(MKSLCD_SCREEN_PAUSE);
           nozzle_park_mks.print_pause_start_flag = 1;
           nozzle_park_mks.blstatus = true;
           ExtUI::pausePrint();
-          //ExtUI::mks_pausePrint();
+        planner.synchronize();
         }
         break;
       case 2: // Abort
@@ -309,7 +313,7 @@ void DGUSScreenHandler::DGUSLCD_SendTMCStepValue(DGUS_VP_Variable &var) {
     if (current_screen == DGUSLCD_SCREEN_SDFILELIST
         || (/*current_screen == DGUSLCD_SCREEN_CONFIRM && */(ConfirmVP == VP_SD_AbortPrintConfirmed || ConfirmVP == VP_SD_FileSelectConfirm))
         || current_screen == DGUSLCD_SCREEN_SDPRINTMANIPULATION
-    ) filelist.refresh();
+    ) filelist.refresh();//release()
   }
 
   void DGUSScreenHandler::SDPrintingFinished() {
@@ -342,15 +346,17 @@ void DGUSScreenHandler::ScreenChangeHook(DGUS_VP_Variable &var, void *val_ptr) {
   // if robin nano is printing. when it is, dgus will enter the printing
   // page to continue print;
   //
-  //if (printJobOngoing() || printingIsPaused()) {
-  //  if (target == MKSLCD_PAUSE_SETTING_MOVE || target == MKSLCD_PAUSE_SETTING_EX
-  //    || target == MKSLCD_SCREEN_PRINT || target == MKSLCD_SCREEN_PAUSE
-  //  ) {
-  //  }
-  //  else
-  //    GotoScreen(MKSLCD_SCREEN_PRINT);
-  // return;
-  //}
+  //999-----------测试
+  if (printJobOngoing() || printingIsPaused()) {
+    if ( target == MKSLCD_SCREEN_PRINT || target == MKSLCD_SCREEN_PAUSE || !ExtUI::isPrintingFromMedia()) 
+      {
+      }
+    else
+        GotoScreen(MKSLCD_SCREEN_PRINT);
+   return;
+  }
+
+
 #if 0
   if (target == DGUSLCD_SCREEN_POPUP) {
     SetupConfirmAction(ExtUI::setUserConfirmed);
@@ -625,7 +631,7 @@ void DGUSScreenHandler::fan_page_MKS(DGUS_VP_Variable &var, void *val_ptr) {
     #endif
 }
 
-uint8_t print_set_from = 0;
+//uint8_t print_set_from = 0 ,Filament_UnLoad_Stop = 0;
 void DGUSScreenHandler::print_set_page_MKS(DGUS_VP_Variable &var, void *val_ptr) {
     const uint16_t value = swap16(*(uint16_t *)val_ptr);
     switch(value) {
@@ -773,8 +779,14 @@ void DGUSScreenHandler::PRINT_SETTING_HANDLER(DGUS_VP_Variable &var, void *val_p
     switch(value) {
       case 0:   
         // if( )   // 判断是否打印中
-        if(print_set_from == 0) GotoScreen(MKSLCD_SCREEN_PRINT);
-        else GotoScreen(MKSLCD_SCREEN_PAUSE);
+        if(print_set_from == 0) {
+          GotoScreen(MKSLCD_SCREEN_PRINT);
+          }
+        
+        else
+        {
+         GotoScreen(MKSLCD_SCREEN_PAUSE);
+        }
       break;
         
       case 1:
@@ -806,6 +818,7 @@ void DGUSScreenHandler::PRINT_SETTING_HANDLER(DGUS_VP_Variable &var, void *val_p
         GotoScreen(MKSLCD_Screen_PRINT_FLAMENT_HOTB); 
       break;	  
     }
+    //999----------
     ForceCompleteUpdate();
 }
 
@@ -1011,7 +1024,7 @@ void DGUSScreenHandler::MeshLevel(DGUS_VP_Variable &var, void *val_ptr) {
           gcode.process_subcommands_now(PSTR(Ebuf));
           planner.synchronize();
         #endif
-        queue.inject_P(PSTR("G28XY"));
+        queue.inject(F("G90\nG1 Z10 F500\nM84 XY"));
         thermalManager.temp_hotend[0].target = 0;
         thermalManager.temp_bed.target = 0; 
         GotoScreen(MKSLCD_SCREEN_HOME);
@@ -1263,6 +1276,7 @@ void DGUSScreenHandler::HandleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
       DEBUG_ECHOLNPGM("Z Home");
       axiscode  = 'Z';
       movevalue = 0;
+      //999------进入调平界面
       break;
   }
 
@@ -1364,7 +1378,7 @@ void DGUSScreenHandler::HandleChangeLevelPoint_MKS(DGUS_VP_Variable &var, void *
   settings.save();
   skipVP = var.VP; // don't overwrite value the next update time as the display might autoincrement in parallel
 }
-
+//999----------bug---
 void DGUSScreenHandler::HandleManualE0_T(DGUS_VP_Variable &var, void *val_ptr) 
 {
 	DEBUG_ECHOLNPGM("HandleManualE0");
@@ -1907,18 +1921,20 @@ void GcodeSuite::M1002() {
 void DGUSScreenHandler::MKS_PrintFilamentLoad_Confirm(DGUS_VP_Variable &var, void *val_ptr) {
   DEBUG_ECHOLNPGM("MKS_PrintFilamentLoad_Confirm");
   uint16_t value = swap16(*(uint16_t*)val_ptr);
+    auto cs = getCurrentScreen();
   switch(value)
   {
     case 0:
-        GotoScreen(MKSLCD_Screen_PRINT_FLAMENT);
-        if (!ExtUI::isPrintingFromMediaPaused()) {
+        if (!ExtUI::isPrintingFromMediaPaused() && cs == MKSLCD_SCREEN_PRINT )
+        {
           nozzle_park_mks.print_pause_start_flag = 1;
           nozzle_park_mks.blstatus = true;
-          ExtUI::pausePrint();
-          loadfilament_confirm_flg = true;
-
-          print_set_from = 1;
-        }     
+          planner.synchronize();
+        }
+        print_set_from = 1;
+        ExtUI::pausePrint(); 
+        planner.synchronize();
+        GotoScreen(MKSLCD_Screen_PRINT_FLAMENT);
     break;
     case 1:
       GotoScreen(MKSLCD_Screen_PRINT_FLAMENT);
@@ -1928,52 +1944,80 @@ void DGUSScreenHandler::MKS_PrintFilamentLoad_Confirm(DGUS_VP_Variable &var, voi
 void DGUSScreenHandler::MKS_PrintFilamentUnLoad_Confirm(DGUS_VP_Variable &var, void *val_ptr) {
   DEBUG_ECHOLNPGM("MKS_PrintFilamentLoad_Confirm");
   uint16_t value = swap16(*(uint16_t*)val_ptr);
+    auto cs = getCurrentScreen();
   switch(value)
   {
     case 0:
-        GotoScreen(MKSLCD_Screen_PRINT_FLAMENT);
-        if (!ExtUI::isPrintingFromMediaPaused()) {
+        if (!ExtUI::isPrintingFromMediaPaused() && cs == MKSLCD_SCREEN_PRINT ) 
+        {
           nozzle_park_mks.print_pause_start_flag = 1;
           nozzle_park_mks.blstatus = true;
-          ExtUI::pausePrint();
-          unloadfilament_confirm_flg = true;
+          planner.synchronize();
+        }
+        print_set_from = 1; 
+        ExtUI::pausePrint();
+        planner.synchronize();
+        GotoScreen(MKSLCD_Screen_PRINT_FLAMENT);
 
-          print_set_from = 1;
-        }     
     break;
     case 1:
       GotoScreen(MKSLCD_Screen_PRINT_FLAMENT);
     break;
   }
 }
-void DGUSScreenHandler::MKS_PrintFilamentLoad(DGUS_VP_Variable &var, void *val_ptr) {
+void DGUSScreenHandler::MKS_PrintFilamentLoad(DGUS_VP_Variable &var, void *val_ptr) 
+{
   DEBUG_ECHOLNPGM("MKS_PrintFilamentLoad");
-  if (!print_job_timer.isPaused() && !queue.ring_buffer.empty())
+if (Filament_UnLoad_Stop == 0)
+{
+  if (!print_job_timer.isPaused() || !queue.ring_buffer.empty())
   {
     GotoScreen(MKSLCD_Screen_PRINT_FLAMENT_LOAD);
     return;
   } 
+  Filament_UnLoad_Stop = 1;
   const float olde = current_position.e;
   current_position.e += PRINT_FILAMENT_LENGTH;
   line_to_current_position(MMM_TO_MMS(PRINT_FILAMENT_SPEED));
   current_position.e = olde;
   planner.set_e_position_mm(olde);
+  //planner.synchronize();
+  }
+else
+{
+  Filament_UnLoad_Stop = 0;
+  planner.quick_stop();
   planner.synchronize();
+}
+    GotoScreen(MKSLCD_Screen_PRINT_FLAMENT);
+    return;
 }
 
 void DGUSScreenHandler::MKS_PrintFilamentUnLoad(DGUS_VP_Variable &var, void *val_ptr) {
   DEBUG_ECHOLNPGM("MKS_PrintFilamentUnLoad");
-  if (!print_job_timer.isPaused() && !queue.ring_buffer.empty())
+if (Filament_UnLoad_Stop == 0)
+{
+  if (!print_job_timer.isPaused() || !queue.ring_buffer.empty() || printingIsActive())
   {
     GotoScreen(MKSLCD_Screen_PRINT_FLAMENT_UNLOAD);
     return;
   }
+  Filament_UnLoad_Stop = 1;
   const float olde = current_position.e;
   current_position.e -= PRINT_FILAMENT_LENGTH;
   line_to_current_position(MMM_TO_MMS(PRINT_FILAMENT_SPEED));
   current_position.e = olde;
   planner.set_e_position_mm(olde);
+  //planner.synchronize();
+}
+else
+{
+  Filament_UnLoad_Stop = 0;
+  planner.quick_stop();
   planner.synchronize();
+}
+    GotoScreen(MKSLCD_Screen_PRINT_FLAMENT);
+    return;
 }
 
 void DGUSScreenHandler::MKS_FilamentCancelHeating(DGUS_VP_Variable &var, void *val_ptr) {
@@ -2272,6 +2316,26 @@ bool DGUSScreenHandler::loop() {
           recovery_flg = false;
         }
       }
+
+       //999---------M0指定层暂停功能
+
+      if ( wait_for_user == true/* && waiting_confirm == 0*/)
+        {   
+        //if (!ExtUI::isPrintingFromMedia()){
+          wait_for_user = false;
+          //}
+        if (print_set_from == 0)
+          {
+          nozzle_park_mks.print_pause_start_flag = 1;
+          nozzle_park_mks.blstatus = true;
+          }
+
+          print_set_from = 1;
+          //waiting_confirm = 1;
+          ExtUI::pausePrint();
+          GotoScreen(MKSLCD_Screen_PRINT_FLAMENT);
+         }
+      
 
       if(booted && printingIsActive() && (recovery_flg!=true) && (current_position.z > 0.8) && (mks_filament_det_enable == 1) ) {
 

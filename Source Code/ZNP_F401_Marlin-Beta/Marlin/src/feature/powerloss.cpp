@@ -64,7 +64,7 @@ uint32_t PrintJobRecovery::cmd_sdpos, // = 0
 PrintJobRecovery recovery;
 
 #ifndef POWER_LOSS_PURGE_LEN
-  #define POWER_LOSS_PURGE_LEN 0
+  #define POWER_LOSS_PURGE_LEN 30
 #endif
 
 #if DISABLED(BACKUP_POWER_SUPPLY)
@@ -524,15 +524,18 @@ void PrintJobRecovery::resume() {
 
     sprintf_P(cmd, PSTR("G1 E%d F600"), (POWER_LOSS_PURGE_LEN) + (POWER_LOSS_RETRACT_LEN));
     gcode.process_subcommands_now(cmd);
-    gcode.process_subcommands_now(PSTR("M83"));
-    gcode.process_subcommands_now(PSTR("G1 E-10 F600"));
-    gcode.process_subcommands_now(PSTR("G90"));
+
   #endif
 
   #if ENABLED(NOZZLE_CLEAN_FEATURE)
     gcode.process_subcommands_now(F("G12"));
   #endif
 
+
+    gcode.process_subcommands_now(PSTR("M83"));
+    gcode.process_subcommands_now(PSTR("G1 E-5 F600"));
+    gcode.process_subcommands_now(PSTR("G90"));
+    
   // Move back over to the saved XY
   sprintf_P(cmd, PSTR("G1X%sY%sF3000"),
     dtostrf(info.current_position.x, 1, 3, str_1),
@@ -549,7 +552,7 @@ void PrintJobRecovery::resume() {
   gcode.process_subcommands_now(cmd);
 
   gcode.process_subcommands_now(PSTR("M83"));
-  gcode.process_subcommands_now(PSTR("G1 E10 F600"));
+  gcode.process_subcommands_now(PSTR("G1 E5 F600"));
   gcode.process_subcommands_now(PSTR("G1 F2000"));
   gcode.process_subcommands_now(PSTR("G90"));
 

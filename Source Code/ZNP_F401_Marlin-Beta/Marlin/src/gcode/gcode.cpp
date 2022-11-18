@@ -939,6 +939,10 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
         case 852: M852(); break;                                  // M852: Set Skew factors
       #endif
 
+      #if ENABLED(GRID_SKEW_COMPENSATION)
+        case 853: M853(); break;                                  // M852: Set Skew factors
+      #endif
+
       #if HAS_PTC
         case 871: M871(); break;                                  // M871: Print/reset/clear first layer temperature offset values
       #endif

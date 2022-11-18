@@ -7,7 +7,7 @@
 | 屏幕固件版本 | 主板固件版本 |
 |-------------------------|----------------------------|
 | Screen Firmware Version | Mainboard Firmware Version |
-|           V1            |        V1.0.2 V1_1.0.3       |
+|           V1            |  V1_1.0.3  V1_1.0.4  V1_1.0.5-Beta     |
 
 
 
@@ -43,5 +43,38 @@
 - Optimize print operations. In the printing process, after clicking 【Pause】, the extrusion machine will draw back 10mm to prevent material leakage.
 - Optimize print operations. After pausing printing, click 【Resume】 to extrude 9mm→ pull back 9mm→ move to the printing position → continue normal printing. Avoid the empty print problem.
 - Optimize print operations. After clicking 【Stop】 to print, the extrusion machine will draw back 10mm to prevent material leakage.
+
+### V1_1.0.5-Beta
+- 新增Z轴自动补偿倾斜校正功能（实验性）。使用M853 L M控制校正范围( -1 > L > 1 ;  -1 > M > 1 ) 。调试方法：https://github.com/NARUTOfzr/Neptune_3/issues/37
+- 新增-可以在gcode中使用M0代码暂停打印，实现指定层暂停功能。使用方法：https://github.com/NARUTOfzr/Neptune_3/issues/38
+- 优化打印中的加载/卸载灯丝操作按钮。操作方法：点击卸载/加载灯丝，点击一下，快速卸载/加载灯丝，再点击一下，停止加载灯丝。实现快速换料。操作说明：Instructions for loading/unloading filaments (during printing)
+- 启用热床PID。默认值：M304 P97.10 I1.41 D1675.16    调试方法：https://github.com/NARUTOfzr/Neptune_3/issues/39
+- 默认关闭断电恢复功能。可以在gcode起始程序中加入M413 S1 开启断电恢复（S0为关闭断电恢复）。
+- 启用Host Action Commands。丰富打印机与octoprint联机交互体验。
+- 启用线性推进。默认：K= 0 。（参见：https://marlinfw.org/docs/features/lin_advance.html） 
+- 修复部分BUG。
+- Added Z-axis automatic compensation tilt correction function (experimental). Use M853 L M to control the correction range (-1 > L > 1; -1 > M > 1).       Debugging method: https://github.com/NARUTOfzr/Neptune_3/issues/37
+- Added - You can use the M0 code in gcode to pause printing to realize the pause function of the specified layer.      How to use: https://github.com/NARUTOfzr/Neptune_3/issues/38
+- Optimized the loading/unloading filament operation button in printing.     Operation method: Click "Unload/Load Filament", click "Quick Unload/Load Filament", and then click "Stop Loading Filament". Realize quick refueling. Operating instructions: Instructions for loading/unloading filaments (during printing)
+- Enable Hotbed PID. Default value: M304 P97.10 I1.41 D1675.16     Debug method: https://github.com/NARUTOfzr/Neptune_3/issues/39
+- The power failure recovery function is disabled by default. You can add M413 S1 to the gcode start program to turn on power-off recovery (S0 is to turn off power-off recovery).
+- Enable Host Action Commands. Enrich the online interactive experience between printer and octoprint.
+- Enable linear advance. Default: K=0 .（See：https://marlinfw.org/docs/features/lin_advance.html）
+- Fix some bugs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

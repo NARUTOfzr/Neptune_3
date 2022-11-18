@@ -22,29 +22,27 @@
 
 #include "../../inc/MarlinConfig.h"
 
-#if ENABLED(SKEW_CORRECTION_GCODE)
+#if ENABLED(GRID_SKEW_COMPENSATION)
 
 #include "../gcode.h"
 #include "../../module/planner.h"
 
 /**
- * M852: Get or set the machine skew factors. Reports current values with no arguments.
+ * M853: Get or set the machine skew factors. Reports current values with no arguments.
  *
- *  S[xy_factor] - Alias for 'I'
- *  I[xy_factor] - New XY skew factor
- *  J[xz_factor] - New XZ skew factor
- *  K[yz_factor] - New YZ skew factor
+ *  L[zx_factor] - New ZX skew factor
+ *  M[zy_factor] - New ZY skew factor
  */
-void GcodeSuite::M852() {
-  if (!parser.seen("SIJK")) return M852_report();
+void GcodeSuite::M853() {
+  if (!parser.seen("LM")) return M853_report();
 
   uint8_t badval = 0, setval = 0;
 
-  if (parser.seenval('I') || parser.seenval('S')) {
+  if (parser.seenval('L')) {
     const float value = parser.value_linear_units();
     if (WITHIN(value, SKEW_FACTOR_MIN, SKEW_FACTOR_MAX)) {
-      if (planner.skew_factor.xy != value) {
-        planner.skew_factor.xy = value;
+      if (planner.skew_factor.zx != value) {
+        planner.skew_factor.zx = value;
         ++setval;
       }
     }
@@ -52,33 +50,18 @@ void GcodeSuite::M852() {
       ++badval;
   }
 
-  #if ENABLED(SKEW_CORRECTION_FOR_Z)
-
-    if (parser.seenval('J')) {
-      const float value = parser.value_linear_units();
-      if (WITHIN(value, SKEW_FACTOR_MIN, SKEW_FACTOR_MAX)) {
-        if (planner.skew_factor.xz != value) {
-          planner.skew_factor.xz = value;
-          ++setval;
-        }
+  if (parser.seenval('M')) {
+    const float value = parser.value_linear_units();
+    if (WITHIN(value, SKEW_FACTOR_MIN, SKEW_FACTOR_MAX)) {
+      if (planner.skew_factor.zy != value) {
+        planner.skew_factor.zy = value;
+        ++setval;
       }
-      else
-        ++badval;
     }
+    else
+      ++badval;
+  }
 
-    if (parser.seenval('K')) {
-      const float value = parser.value_linear_units();
-      if (WITHIN(value, SKEW_FACTOR_MIN, SKEW_FACTOR_MAX)) {
-        if (planner.skew_factor.yz != value) {
-          planner.skew_factor.yz = value;
-          ++setval;
-        }
-      }
-      else
-        ++badval;
-    }
-
-  #endif
 
   if (badval)
     SERIAL_ECHOLNPGM(STR_SKEW_MIN " " STRINGIFY(SKEW_FACTOR_MIN) " " STR_SKEW_MAX " " STRINGIFY(SKEW_FACTOR_MAX));
@@ -91,16 +74,11 @@ void GcodeSuite::M852() {
   }
 }
 
-void GcodeSuite::M852_report(const bool forReplay/*=true*/) {
+void GcodeSuite::M853_report(const bool forReplay/*=true*/) {
   report_heading_etc(forReplay, F(STR_SKEW_FACTOR));
-  SERIAL_ECHOPAIR_F("  M852 I", planner.skew_factor.xy, 6);
-  #if ENABLED(SKEW_CORRECTION_FOR_Z)
-    SERIAL_ECHOPAIR_F(" J", planner.skew_factor.xz, 6);
-    SERIAL_ECHOPAIR_F(" K", planner.skew_factor.yz, 6);
-    SERIAL_ECHOLNPGM(" ; XY, XZ, YZ");
-  #else
-    SERIAL_ECHOLNPGM(" ; XY");
-  #endif
+  SERIAL_ECHOPAIR_F("  M853 L", planner.skew_factor.zx, 6);
+    SERIAL_ECHOPAIR_F(" M", planner.skew_factor.zy, 6);
+    SERIAL_ECHOLNPGM(" ; ZX ,ZY");
 }
 
-#endif // SKEW_CORRECTION_GCODE
+#endif // GRID_SKEW_COMPENSATION

@@ -2327,6 +2327,13 @@ void MarlinSettings::postprocess() {
             #endif
           }
         #endif
+        #if ENABLED(GRID_SKEW_COMPENSATION)
+          if (!validating) {
+            planner.skew_factor.zx = skew_factor.zx;
+            planner.skew_factor.zy = skew_factor.zy;
+          }
+        #endif
+
       }
 
       //
@@ -3140,8 +3147,14 @@ void MarlinSettings::reset() {
     #if ENABLED(SKEW_CORRECTION_FOR_Z)
       planner.skew_factor.xz = XZ_SKEW_FACTOR;
       planner.skew_factor.yz = YZ_SKEW_FACTOR;
+      //planner.skew_factor.zx = ZX_SKEW_FACTOR;
     #endif
   #endif
+    #if ENABLED(GRID_SKEW_COMPENSATION)
+      planner.skew_factor.zx = ZX_SKEW_FACTOR;
+      planner.skew_factor.zy = ZY_SKEW_FACTOR;
+    #endif
+
 
   //
   // Advanced Pause filament load & unload lengths
@@ -3387,6 +3400,9 @@ void MarlinSettings::reset() {
     // Bed Skew Correction
     //
     TERN_(SKEW_CORRECTION_GCODE, gcode.M852_report(forReplay));
+    TERN_(GRID_SKEW_COMPENSATION, gcode.M853_report(forReplay));
+
+    
 
     #if HAS_TRINAMIC_CONFIG
       //

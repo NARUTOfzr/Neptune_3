@@ -38,6 +38,8 @@
 #include "../../../../module/temperature.h"
 #include "../../../../sd/cardreader.h"
 
+#include "../../../../gcode/gcode.h"
+
 #if ENABLED(MKS_TEST)
 
 #include "../../../../pins/pins.h"
@@ -84,8 +86,19 @@
 
 
 #if ENABLED(MKS_TEST)
+
+#define IS_3
+
+
 uint8_t mks_test_flag = 0;
-const char *MKSTestPath = "MKS_TEST";
+//const char *MKSTestPath = "MKS_TEST";
+
+#if ENABLED(IS_3)
+    const char *MKSTestPath = "ZNP_TEST";    //999--------Neptune3机器黑屏测试
+#else
+    const char *MKSTestPath = "MKS_TEST";
+#endif
+
 void mks_test_get() 
 {
   SdFile dir, root = card.getroot();
@@ -220,8 +233,6 @@ void mks_test_beeper() {
 #if ENABLED(MKS_TEST)
 
 void mks_gpio_test() {
-  
-
   test_gpio_readlevel_L();
   test_gpio_readlevel_H();
   test_gpio_readlevel_L();
@@ -248,8 +259,15 @@ void mksStepperTest()
 		WRITE(X_STEP_PIN, LOW);
     WRITE(Y_STEP_PIN, LOW);
     WRITE(Z_STEP_PIN, LOW);
-    WRITE(E0_STEP_PIN, LOW);
-    WRITE(E1_STEP_PIN, LOW);
+
+
+    #if ENABLED(IS_3)
+    #else
+        WRITE(E0_STEP_PIN, LOW);
+        WRITE(E1_STEP_PIN, LOW);
+    #endif
+
+
     //HAL_Delay(100);
 		mksStepperState = 1;
 	}
@@ -258,13 +276,23 @@ void mksStepperTest()
 		WRITE(X_STEP_PIN, HIGH);
     WRITE(Y_STEP_PIN, HIGH);
     WRITE(Z_STEP_PIN, HIGH);
-    WRITE(E0_STEP_PIN, HIGH);
-    WRITE(E1_STEP_PIN, HIGH);
+
+    #if ENABLED(IS_3)
+    #else
+        WRITE(E0_STEP_PIN, HIGH);
+        WRITE(E1_STEP_PIN, HIGH);
+    #endif
 		mksStepperState = 0;
     //HAL_Delay(100);
 	}
 	//testCnt++;
 }	
+
+
+volatile uint8_t flag_update = 0;
+
+volatile millis_t time_update = 0;
+
 
 
 
@@ -273,24 +301,41 @@ void mksStepperTest()
 void mks_hardware_test() {
   char buf[30] = {0};
 
+  millis_t ms = millis();
+  if(flag_update==0)
+  {
+    flag_update = 1;
+    time_update = (ms + 3000);
+  }
 
-  if (millis() % 3000 < 1000) {
+  //if (millis() % 3000 < 1000)
+  if(ms>=time_update) 
+    {
+    //ScreenHandler.GotoScreen(MKSLCD_SCREEN_HOME);
+    if((ms-time_update)>=3000)
+    {
+      flag_update = 0;
+    }
 
-  
-    thermalManager.fan_speed[0] = 255;
-    WRITE(X_DIR_PIN, LOW);
+    thermalManager.fan_speed[0] = 0;
+    WRITE(X_DIR_PIN, HIGH);
     #if HAS_Y_AXIS
-      WRITE(Y_DIR_PIN, LOW);
+      WRITE(Y_DIR_PIN, HIGH);
     #endif
     #if HAS_Z_AXIS
-      WRITE(Z_DIR_PIN, LOW);
+      WRITE(Z_DIR_PIN, HIGH);
     #endif
-    #if HAS_EXTRUDERS
-      WRITE(E0_DIR_PIN, LOW);
+
+    #if ENABLED(IS_3)   //888-------用户不需要测试E轴，会影响调平传感器
+    #else
+      #if HAS_EXTRUDERS
+        WRITE(E0_DIR_PIN, HIGH);
+      #endif
+      #if HAS_MULTI_EXTRUDER && DISABLED(MKS_HARDWARE_TEST_ONLY_E0)
+        WRITE(E1_DIR_PIN, HIGH);
+      #endif
     #endif
-    #if HAS_MULTI_EXTRUDER && DISABLED(MKS_HARDWARE_TEST_ONLY_E0)
-      WRITE(E1_DIR_PIN, LOW);
-    #endif
+
     #if HAS_MULTI_HOTEND && DISABLED(MKS_HARDWARE_TEST_ONLY_E0)
       WRITE(HEATER_1_PIN, HIGH); // HE1
     #endif
@@ -301,21 +346,30 @@ void mks_hardware_test() {
       WRITE(HEATER_BED_PIN, HIGH); // HOT-BED
     #endif
   }
-  else {
-    thermalManager.fan_speed[0] = 0;
-    WRITE(X_DIR_PIN, HIGH);
+  else 
+  {
+    ScreenHandler.GotoScreen(MKSLCD_ABOUT);
+    thermalManager.fan_speed[0] = 255;
+    WRITE(X_DIR_PIN, LOW);
     #if HAS_Y_AXIS
-      WRITE(Y_DIR_PIN, HIGH);
+      WRITE(Y_DIR_PIN, LOW);
     #endif
     #if HAS_Y_AXIS
-      WRITE(Z_DIR_PIN, HIGH);
+      WRITE(Z_DIR_PIN, LOW);
     #endif
-    #if HAS_EXTRUDERS
-      WRITE(E0_DIR_PIN, HIGH);
+
+    #if ENABLED(IS_3)    //888-------用户不需要测试E轴，会影响调平传感器
+    #else
+      #if HAS_EXTRUDERS
+        WRITE(E0_DIR_PIN, LOW);
+      #endif
+      #if HAS_MULTI_EXTRUDER && DISABLED(MKS_HARDWARE_TEST_ONLY_E0)
+        WRITE(E1_DIR_PIN, LOW);
+      #endif
     #endif
-    #if HAS_MULTI_EXTRUDER && DISABLED(MKS_HARDWARE_TEST_ONLY_E0)
-      WRITE(E1_DIR_PIN, HIGH);
-    #endif
+
+
+
     #if HAS_MULTI_HOTEND && DISABLED(MKS_HARDWARE_TEST_ONLY_E0)
       WRITE(HEATER_1_PIN, LOW); // HE1
     #endif
@@ -343,6 +397,29 @@ void mks_hardware_test() {
     sprintf_P(buf, PSTR("bed:%d"), thermalManager.wholeDegBed());
     //lv_label_set_text(bed, buf);
   #endif
+
+
+    #if ENABLED(IS_3)
+        if(IS_SD_INSERTED())
+      {
+        mks_test_flag = 0x1E;
+      }
+      else
+      {
+        mks_test_flag = 0x00;
+        thermalManager.fan_speed[0] = 0;
+        gcode.process_subcommands_now(PSTR("G1 Z10 F400"));
+        gcode.process_subcommands_now(PSTR("M84 XY"));
+        //gcode.process_subcommands_now(PSTR("M17 Z"));
+        ScreenHandler.GotoScreen(MKSLCD_SCREEN_HOME);
+        //ScreenHandler.GotoScreen(DGUSLCD_SCREEN_SDFILELIST);
+        
+      }
+    #else
+    #endif
+
+
+
 }
 
 #endif
