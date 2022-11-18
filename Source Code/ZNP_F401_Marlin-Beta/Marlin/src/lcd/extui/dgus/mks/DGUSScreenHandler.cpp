@@ -819,7 +819,6 @@ void DGUSScreenHandler::PRINT_SETTING_HANDLER(DGUS_VP_Variable &var, void *val_p
       break;	  
     }
     //999----------
-    Filament_UnLoad_Stop = 0;
     ForceCompleteUpdate();
 }
 
@@ -1922,10 +1921,11 @@ void GcodeSuite::M1002() {
 void DGUSScreenHandler::MKS_PrintFilamentLoad_Confirm(DGUS_VP_Variable &var, void *val_ptr) {
   DEBUG_ECHOLNPGM("MKS_PrintFilamentLoad_Confirm");
   uint16_t value = swap16(*(uint16_t*)val_ptr);
+    auto cs = getCurrentScreen();
   switch(value)
   {
     case 0:
-        if (!ExtUI::isPrintingFromMediaPaused())
+        if (!ExtUI::isPrintingFromMediaPaused() && cs == MKSLCD_SCREEN_PRINT )
         {
           nozzle_park_mks.print_pause_start_flag = 1;
           nozzle_park_mks.blstatus = true;
@@ -1944,10 +1944,11 @@ void DGUSScreenHandler::MKS_PrintFilamentLoad_Confirm(DGUS_VP_Variable &var, voi
 void DGUSScreenHandler::MKS_PrintFilamentUnLoad_Confirm(DGUS_VP_Variable &var, void *val_ptr) {
   DEBUG_ECHOLNPGM("MKS_PrintFilamentLoad_Confirm");
   uint16_t value = swap16(*(uint16_t*)val_ptr);
+    auto cs = getCurrentScreen();
   switch(value)
   {
     case 0:
-        if (!ExtUI::isPrintingFromMediaPaused()) 
+        if (!ExtUI::isPrintingFromMediaPaused() && cs == MKSLCD_SCREEN_PRINT ) 
         {
           nozzle_park_mks.print_pause_start_flag = 1;
           nozzle_park_mks.blstatus = true;
