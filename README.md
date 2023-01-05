@@ -81,7 +81,7 @@
 - 启用Host Action Commands。丰富打印机与octoprint联机交互体验。
 - 启用线性推进。默认：K= 0 。（参见：https://marlinfw.org/docs/features/lin_advance.html） 
 - 修复部分BUG。
-- Added Z-axis automatic compensation tilt correction function (experimental). Use M853 L M to control the correction range (-1 > L > 1; -1 > M > 1).       Debugging method: https://github.com/NARUTOfzr/Neptune_3/issues/37
+
 - Added - You can use the M0 code in gcode to pause printing to realize the pause function of the specified layer.      How to use: https://github.com/NARUTOfzr/Neptune_3/issues/38
 - Optimized the loading/unloading filament operation button in printing.     Operation method: Click "Unload/Load Filament", click "Quick Unload/Load Filament", and then click "Stop Loading Filament". Realize quick refueling. Operating instructions: Instructions for loading/unloading filaments (during printing)
 - Enable Hotbed PID. Default value: M304 P97.10 I1.41 D1675.16     Debug method: https://github.com/NARUTOfzr/Neptune_3/issues/39
