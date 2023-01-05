@@ -74,7 +74,6 @@
 - Optimize print operations. After clicking 【Stop】 to print, the extrusion machine will draw back 10mm to prevent material leakage.
 
 #### V1_1.0.5-Beta
-- 新增Z轴自动补偿倾斜校正功能（实验性）。使用M853 L M控制校正范围( -1 > L > 1 ;  -1 > M > 1 ) 。调试方法：https://github.com/NARUTOfzr/Neptune_3/issues/37
 - 新增-可以在gcode中使用M0代码暂停打印，实现指定层暂停功能。使用方法：https://github.com/NARUTOfzr/Neptune_3/issues/38
 - 优化打印中的加载/卸载灯丝操作按钮。操作方法：点击卸载/加载灯丝，点击一下，快速卸载/加载灯丝，再点击一下，停止加载灯丝。实现快速换料。操作说明：Instructions for loading/unloading filaments (during printing)
 - 启用热床PID。默认值：M304 P97.10 I1.41 D1675.16    调试方法：https://github.com/NARUTOfzr/Neptune_3/issues/39
