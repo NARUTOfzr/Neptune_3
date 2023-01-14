@@ -1603,7 +1603,10 @@
   // The height can be set with M420 Z<height>
   #define ENABLE_LEVELING_FADE_HEIGHT
   #if ENABLED(ENABLE_LEVELING_FADE_HEIGHT)
-    #define DEFAULT_LEVELING_FADE_HEIGHT 5.0 // (mm) Default fade height.
+    #define DEFAULT_LEVELING_FADE_HEIGHT 0.0 // (mm) Default fade height.
+  //* If this item is enabled, compensation problems will occur for the heavily 
+  //* tilted mesh, resulting in one side being too close to the platform and the
+  //* other being too far away from the platform in the first print layer.
   #endif
 
   // For Cartesian machines, instead of dividing moves on mesh boundaries,
@@ -1615,7 +1618,7 @@
   /**
    * Enable the G26 Mesh Validation Pattern tool.
    */
-  //#define G26_MESH_VALIDATION
+  #define G26_MESH_VALIDATION
   #if ENABLED(G26_MESH_VALIDATION)
     #define MESH_TEST_NOZZLE_SIZE    0.4  // (mm) Diameter of primary nozzle.
     #define MESH_TEST_LAYER_HEIGHT   0.2  // (mm) Default layer height for G26.
@@ -1652,7 +1655,7 @@
 
     
     //2---------探测点之间的细分数
-    //#define ABL_BILINEAR_SUBDIVISION
+    #define ABL_BILINEAR_SUBDIVISION
     #if ENABLED(ABL_BILINEAR_SUBDIVISION)
       // Number of subdivisions between probe points
       #define BILINEAR_SUBDIVISIONS 3
@@ -1852,7 +1855,7 @@
   #define SKEW_CORRECTION_GCODE
 #endif
 
-#define GRID_SKEW_COMPENSATION
+//#define GRID_SKEW_COMPENSATION
   #if ENABLED(GRID_SKEW_COMPENSATION)
     #define ZX_SKEW_FACTOR 0.0
     #define ZY_SKEW_FACTOR 0.0

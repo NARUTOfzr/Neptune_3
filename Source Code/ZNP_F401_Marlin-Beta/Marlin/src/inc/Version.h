@@ -26,7 +26,7 @@
  */
 #if ENABLED(IS_3)
      //#define UI_VERSION "        V1_1.0.4"
-     #define UI_VERSION "   V1_1.0.5_Beta"
+     #define UI_VERSION "  V1_1.0.5_Beta1"
 
     #ifndef UI_VERSION
     #define UI_VERSION "   V1_1.0.5_Beta"

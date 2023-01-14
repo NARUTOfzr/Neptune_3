@@ -871,8 +871,16 @@ void DGUSScreenHandler::Level_Ctrl_MKS(DGUS_VP_Variable &var, void *val_ptr) {
       sprintf(buf, "M109 S%d", mks_AL_default_e0_temp);
       gcode.process_subcommands_now(PSTR(buf));
 
-      //2-------G29中已开启G28   
-      queue.inject_P(PSTR("G29"));
+     //2-------G29中已开启G28 
+    gcode.process_subcommands_now(PSTR("G28"));
+
+    gcode.process_subcommands_now(PSTR("G91"));
+    gcode.process_subcommands_now(PSTR("G1 Z5 F300"));
+    gcode.process_subcommands_now(PSTR("G90"));
+    queue.inject_P(PSTR("G29"));
+
+
+
 
       #elif ENABLED(MESH_BED_LEVELING)
         mesh_point_count = GRID_MAX_POINTS;
@@ -1276,6 +1284,8 @@ void DGUSScreenHandler::HandleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
       DEBUG_ECHOLNPGM("Z Home");
       axiscode  = 'Z';
       movevalue = 0;
+      //GotoScreen(MKSLCD_SCREEM_TOOL);
+      //GotoScreen(MKSLCD_AUTO_LEVEL);
       //999------进入调平界面
       break;
   }
@@ -2237,8 +2247,20 @@ bool DGUSScreenHandler::loop() {
       gcode.process_subcommands_now(PSTR(Ebuf));
     #endif
 
-    //2-------G29中已开启G28 
+     //2-------G29中已开启G28 
+    gcode.process_subcommands_now(PSTR("G28"));
+
+    gcode.process_subcommands_now(PSTR("G91"));
+    gcode.process_subcommands_now(PSTR("G1 Z5 F300"));
+    gcode.process_subcommands_now(PSTR("G90"));
     queue.inject_P(PSTR("G29"));
+
+
+
+
+
+
+
   }
 
 
