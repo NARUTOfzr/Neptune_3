@@ -1603,7 +1603,7 @@
   // The height can be set with M420 Z<height>
   #define ENABLE_LEVELING_FADE_HEIGHT
   #if ENABLED(ENABLE_LEVELING_FADE_HEIGHT)
-    #define DEFAULT_LEVELING_FADE_HEIGHT 0.0 // (mm) Default fade height.
+    #define DEFAULT_LEVELING_FADE_HEIGHT 10.0 // (mm) Default fade height.
   //* If this item is enabled, compensation problems will occur for the heavily 
   //* tilted mesh, resulting in one side being too close to the platform and the
   //* other being too far away from the platform in the first print layer.
